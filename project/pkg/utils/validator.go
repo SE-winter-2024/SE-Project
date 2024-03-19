@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/models"
+	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -9,7 +9,7 @@ import (
 
 var validate = validator.New()
 
-func ValidateUser(user models.User) []map[string]string {
+func ValidateUser(user dto.User) []map[string]string {
 	var errors []map[string]string
 	err := validate.Struct(user)
 	if err != nil {

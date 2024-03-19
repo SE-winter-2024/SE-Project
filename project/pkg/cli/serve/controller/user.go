@@ -1,15 +1,12 @@
 package serve
 
 import (
-	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
-	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/models"
+	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
+	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils/authService"
-	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -24,51 +21,65 @@ func (c *UserController) RegisterRoutes(group fiber.Router) {
 	group.Post("/sign-up", c.SignUp)
 }
 
-func GetUserByEmail(email string) (*models.User, error) {
-	var user models.User
-	if err := database.DB.Where("email = ?", email).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-	return &user, nil
-}
-
+// LogIn
+// @Summary Log in user
+// @Description Logs in a user using email and password
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param request body string true "Email"
+// @Param request body string true "Password"
+// @Success 200 {object} dto.UserResponse "User information"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /user/login [get]
 func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 	var loginRequest struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-
 	if err := ctx.BodyParser(&loginRequest); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
 
-	user, err := GetUserByEmail(loginRequest.Email)
+	user, err := serve.GetUser(loginRequest.Email, loginRequest.Password)
 	if err != nil {
-		return err
+		fmt.Println(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Cannot get user", "error": err})
 	}
-	fmt.Println("user: ", user)
-	if user == nil {
-		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid email or password"})
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
-		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid email or password"})
-	}
-
-	token, err := authService.JwtGenerator(*user)
+	token, err := authService.JwtGenerator(user)
 	fmt.Println(token)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
-
-	return ctx.JSON(user)
+	userR := dto.User{
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Password:    user.Password,
+		PhoneNumber: user.PhoneNumber,
+		Type:        user.Type,
+		InfoID:      user.InfoID,
+		InfoType:    user.InfoType,
+		Block:       user.Block,
+		Wallet:      user.Wallet,
+	}
+	return ctx.JSON(userR)
 }
 
+// SignUp
+// @Summary Sign up user
+// @Description Signs up a new user with provided details
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user body dto.User true "User details"
+// @Success 200 {object} dto.UserResponse "User information"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /user/sign-up [post]
 func (c *UserController) SignUp(ctx *fiber.Ctx) error {
-	var user models.User
+	var user dto.User
 	if err := ctx.BodyParser(&user); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
@@ -80,16 +91,25 @@ func (c *UserController) SignUp(ctx *fiber.Ctx) error {
 	if err := user.HashPassword(); err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to hash password"})
 	}
-
-	if err := database.DB.Create(&user); err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to create user", "error": err})
+	userModel, err := serve.CreateUser(user)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "cannot create user", "error": err})
 	}
-
-	token, err := authService.JwtGenerator(user)
-	fmt.Println(token)
+	_, err = authService.JwtGenerator(userModel)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
-
-	return ctx.Status(http.StatusCreated).JSON(fiber.Map{"message": "User created successfully"})
+	userR := dto.User{
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Password:    user.Password,
+		PhoneNumber: user.PhoneNumber,
+		Type:        user.Type,
+		InfoID:      user.InfoID,
+		InfoType:    user.InfoType,
+		Block:       user.Block,
+		Wallet:      user.Wallet,
+	}
+	return ctx.JSON(userR)
 }

@@ -17,6 +17,7 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
+	app.Static("/swagger", "./././docs")
 
 	user := app.Group("/user")
 	var userController serve.UserController
