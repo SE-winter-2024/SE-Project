@@ -15,6 +15,65 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/trainee/profile/{id}": {
+            "put": {
+                "description": "Updates the profile information of a trainee by UserID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Edit trainee profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Trainee profile data",
+                        "name": "trainer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TraineeEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated trainee profile",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TraineeResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainer/profile/{id}": {
             "get": {
                 "description": "Retrieves the profile information of a trainer by ID",
@@ -42,6 +101,63 @@ const docTemplate = `{
                         "description": "Trainer profile information",
                         "schema": {
                             "$ref": "#/definitions/dto.TrainerResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates the profile information of a trainer by UserID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "Edit trainer profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Trainer profile data",
+                        "name": "trainer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainerEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated trainer profile",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "404": {
@@ -162,6 +278,109 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.TraineeEdit": {
+            "type": "object"
+        },
+        "dto.TraineeProfileCard": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                },
+                "wallet": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.TraineeResponse": {
+            "type": "object",
+            "properties": {
+                "health_problems": {
+                    "type": "string"
+                },
+                "sport_experience": {
+                    "type": "string"
+                },
+                "trainee_profile_card": {
+                    "$ref": "#/definitions/dto.TraineeProfileCard"
+                }
+            }
+        },
+        "dto.TrainerEdit": {
+            "type": "object",
+            "required": [
+                "achievements",
+                "active_days",
+                "coach_experience",
+                "contact",
+                "country",
+                "education",
+                "language",
+                "role",
+                "sport",
+                "status",
+                "user_name"
+            ],
+            "properties": {
+                "achievements": {
+                    "type": "string"
+                },
+                "active_days": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean"
+                    }
+                },
+                "coach_experience": {
+                    "type": "integer"
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "education": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "sport": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TrainerProfileCard": {
             "type": "object",
             "properties": {
@@ -211,14 +430,18 @@ const docTemplate = `{
         "dto.User": {
             "type": "object",
             "required": [
+                "age",
                 "email",
                 "first_name",
+                "gender",
                 "last_name",
                 "password",
-                "phone_number",
-                "type"
+                "phone_number"
             ],
             "properties": {
+                "age": {
+                    "type": "integer"
+                },
                 "block": {
                     "type": "boolean"
                 },
@@ -227,6 +450,12 @@ const docTemplate = `{
                 },
                 "first_name": {
                     "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "info_id": {
                     "type": "string"
@@ -244,9 +473,6 @@ const docTemplate = `{
                 "phone_number": {
                     "type": "string",
                     "minLength": 11
-                },
-                "type": {
-                    "type": "string"
                 },
                 "wallet": {
                     "type": "integer"
@@ -287,6 +513,9 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        },
+        "models.User": {
+            "type": "object"
         }
     }
 }`

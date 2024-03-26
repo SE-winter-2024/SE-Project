@@ -57,9 +57,10 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 		Email:       user.Email,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
+		Age:         user.Age,
+		Gender:      user.Gender,
 		Password:    user.Password,
 		PhoneNumber: user.PhoneNumber,
-		Type:        user.Type,
 		InfoID:      user.InfoID,
 		InfoType:    user.InfoType,
 		Block:       user.Block,
@@ -101,16 +102,18 @@ func (c *UserController) SignUp(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
 	userR := dto.User{
-		Email:       user.Email,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
-		Password:    user.Password,
-		PhoneNumber: user.PhoneNumber,
-		Type:        user.Type,
-		InfoID:      user.InfoID,
-		InfoType:    user.InfoType,
-		Block:       user.Block,
-		Wallet:      user.Wallet,
+		ID:          userModel.ID,
+		Email:       userModel.Email,
+		FirstName:   userModel.FirstName,
+		LastName:    userModel.LastName,
+		Age:         userModel.Age,
+		Gender:      userModel.Gender,
+		Password:    userModel.Password,
+		PhoneNumber: userModel.PhoneNumber,
+		InfoID:      userModel.InfoID,
+		InfoType:    userModel.InfoType,
+		Block:       userModel.Block,
+		Wallet:      userModel.Wallet,
 	}
 	return ctx.JSON(userR)
 }

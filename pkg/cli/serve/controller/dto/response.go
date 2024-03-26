@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type UserResponse struct {
 	Email       string `json:"email,omitempty"`
 	FirstName   string `json:"first_name,omitempty"`
@@ -24,9 +26,59 @@ type TrainerProfileCard struct {
 	UserName        string `json:"user_name,omitempty"`
 	Email           string `json:"email,omitempty"`
 	Status          string `json:"status,omitempty"`
-	Role            string `json:"role,omitempty"`
 	CoachExperience uint   `json:"coach_experience,omitempty"`
 	Contact         string `json:"contact,omitempty"`
 	Language        string `json:"language,omitempty"`
 	Country         string `json:"country,omitempty"`
+}
+
+type TraineeInTrainerPage struct {
+	Name string `json:"name,omitempty"`
+}
+
+type RequestsInTrainerPage struct {
+	TraineeName string    `json:"trainee_name,omitempty"`
+	Date        time.Time `json:"date"`
+	Payment     uint64    `json:"payment,omitempty"`
+	Status      string    `json:"status,omitempty"`
+}
+
+type TrainerPlan struct {
+	Monday    bool `json:"monday,omitempty"`
+	Tuesday   bool `json:"tuesday,omitempty"`
+	Wednesday bool `json:"wednesday,omitempty"`
+	Thursday  bool `json:"thursday,omitempty"`
+	Friday    bool `json:"friday,omitempty"`
+	Saturday  bool `json:"saturday,omitempty"`
+	Sunday    bool `json:"sunday,omitempty"`
+}
+
+type SportActivity struct {
+	ExpectedCount  uint   `json:"expected_count,omitempty"`
+	ExpectedWeight uint   `json:"expected_weight,omitempty"`
+	MyCount        uint   `json:"my_count,omitempty"`
+	Video          string `json:"video,omitempty"` // url
+}
+
+type TraineeProgram struct {
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
+	Payment   uint      `json:"payment,omitempty"`
+	Status    string    `json:"status,omitempty"`
+}
+
+type TraineeResponse struct {
+	TraineeProfileCard `json:"trainee_profile_card"`
+	SportExperience    string `json:"sport_experience,omitempty"`
+	HealthProblems     string `json:"health_problems,omitempty"`
+}
+
+type TraineeProfileCard struct {
+	UserName string `json:"userName,omitempty"`
+	Email    string `json:"email,omitempty"`
+	Status   string `json:"status,omitempty"`
+	Wallet   uint64 `json:"wallet,omitempty"`
+	Contact  string `json:"contact,omitempty"`
+	Language string `json:"language,omitempty"`
+	Country  string `json:"country,omitempty"`
 }
