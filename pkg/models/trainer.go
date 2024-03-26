@@ -1,10 +1,13 @@
 package models
 
+import "gorm.io/gorm"
+
 type Trainer struct {
+	gorm.Model
+	User            User
+	UserID          uint
 	UserName        string
-	Email           string
 	Status          string
-	Role            string
 	CoachExperience uint
 	Contact         string
 	Language        string
@@ -12,4 +15,8 @@ type Trainer struct {
 	Sport           string
 	Achievements    string
 	Education       string
+	ActiveDays      ActiveDays
+	ActiveDaysID    uint
+	Trainees        []Trainee
+	Requests        []Request
 }

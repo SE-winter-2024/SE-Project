@@ -1,4 +1,75 @@
 definitions:
+  dto.TraineeEdit:
+    type: object
+  dto.TraineeProfileCard:
+    properties:
+      contact:
+        type: string
+      country:
+        type: string
+      email:
+        type: string
+      language:
+        type: string
+      role:
+        type: string
+      status:
+        type: string
+      userName:
+        type: string
+      wallet:
+        type: integer
+    type: object
+  dto.TraineeResponse:
+    properties:
+      health_problems:
+        type: string
+      sport_experience:
+        type: string
+      trainee_profile_card:
+        $ref: '#/definitions/dto.TraineeProfileCard'
+    type: object
+  dto.TrainerEdit:
+    properties:
+      achievements:
+        type: string
+      active_days:
+        items:
+          type: boolean
+        type: array
+      coach_experience:
+        type: integer
+      contact:
+        type: string
+      country:
+        type: string
+      education:
+        type: string
+      language:
+        type: string
+      role:
+        type: string
+      sport:
+        type: string
+      status:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      user_name:
+        type: string
+    required:
+    - achievements
+    - active_days
+    - coach_experience
+    - contact
+    - country
+    - education
+    - language
+    - role
+    - sport
+    - status
+    - user_name
+    type: object
   dto.TrainerProfileCard:
     properties:
       coach_experience:
@@ -31,12 +102,18 @@ definitions:
     type: object
   dto.User:
     properties:
+      age:
+        type: integer
       block:
         type: boolean
       email:
         type: string
       first_name:
         type: string
+      gender:
+        type: string
+      id:
+        type: integer
       info_id:
         type: string
       info_type:
@@ -49,17 +126,16 @@ definitions:
       phone_number:
         minLength: 11
         type: string
-      type:
-        type: string
       wallet:
         type: integer
     required:
+    - age
     - email
     - first_name
+    - gender
     - last_name
     - password
     - phone_number
-    - type
     type: object
   dto.UserResponse:
     properties:
@@ -84,9 +160,50 @@ definitions:
       wallet:
         type: integer
     type: object
+  models.User:
+    type: object
 info:
   contact: {}
 paths:
+  /trainee/profile/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates the profile information of a trainee by UserID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Trainee profile data
+        in: body
+        name: trainer
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TraineeEdit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated trainee profile
+          schema:
+            $ref: '#/definitions/dto.TraineeResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Trainee not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Edit trainee profile
+      tags:
+      - trainee
   /trainer/profile/{id}:
     get:
       consumes:
@@ -114,6 +231,44 @@ paths:
           schema:
             type: string
       summary: Get trainer profile
+      tags:
+      - trainer
+    put:
+      consumes:
+      - application/json
+      description: Updates the profile information of a trainer by UserID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Trainer profile data
+        in: body
+        name: trainer
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TrainerEdit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated trainer profile
+          schema:
+            $ref: '#/definitions/dto.TrainerResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Trainer not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Edit trainer profile
       tags:
       - trainer
   /user/login:

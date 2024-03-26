@@ -30,8 +30,24 @@ func SetUpDB() {
 		retries--
 		time.Sleep(5 * time.Second)
 	}
-
+	//ClearDB()
 	DB.AutoMigrate(
 		&models.User{},
+		&models.Trainer{},
+		&models.Trainee{},
+		&models.ActiveDays{},
 	)
+}
+
+func ClearDB() {
+	err := DB.Migrator().DropTable(
+		&models.User{},
+		&models.Trainer{},
+		&models.Trainee{},
+	)
+	if err != nil {
+		fmt.Println("Error clearing database tables:", err)
+	} else {
+		fmt.Println("Database tables cleared successfully")
+	}
 }
