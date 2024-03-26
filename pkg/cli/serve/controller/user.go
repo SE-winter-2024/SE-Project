@@ -53,6 +53,7 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
 	userR := dto.User{
+		ID:          user.ID,
 		Email:       user.Email,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
