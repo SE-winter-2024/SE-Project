@@ -68,3 +68,16 @@ type TraineeEdit struct {
 	MedicalHistory string      `json:"medicalHistory" validate:"required"`
 	ActiveDays     []bool      `json:"active_days" validate:"required"`
 }
+
+type ProgramRequest struct {
+	TrainerID   uint   `json:"trainerID" validate:"required"`
+	TraineeID   uint   `json:"traineeID" validate:"required"`
+	Description string `json:"description"`
+	ActiveDays  []bool `json:"active_days" validate:"required"`
+}
+
+type TrainerSetPrice struct {
+	RequestId uint `json:"requestId" validate:"required"`
+	Price     uint `json:"price" validate:"required"`
+	Rejected  bool `json:"rejected" validate:"required"`
+}

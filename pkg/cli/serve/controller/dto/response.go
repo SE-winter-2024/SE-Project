@@ -39,7 +39,7 @@ type TraineeInTrainerPage struct {
 type RequestsInTrainerPage struct {
 	TraineeName string    `json:"trainee_name,omitempty"`
 	Date        time.Time `json:"date"`
-	Payment     uint64    `json:"payment,omitempty"`
+	Price       uint64    `json:"price,omitempty"`
 	Status      string    `json:"status,omitempty"`
 }
 

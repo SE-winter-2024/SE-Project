@@ -19,7 +19,6 @@ type Trainee struct {
 	MedicalHistory string
 	ActiveDays     ActiveDays
 	ActiveDaysID   uint
+	RequestID      uint `gorm:"column:request_id"`
 	TrainerID      uint
-	Trainer        Trainer `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	RequestID      uint
 }

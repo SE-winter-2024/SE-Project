@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"time"
 )
 
 func GetTraineeProfile(id uint) (models.Trainee, error) {
@@ -60,6 +61,7 @@ func EditTraineeProfile(id uint64, trainee dto.TraineeEdit) (models.Trainee, err
 		Sports:         trainee.Sports,
 		MedicalHistory: trainee.MedicalHistory,
 		ActiveDaysID:   activeDays.ID,
+		//TrainerID:      0,
 	}
 
 	user.InfoID = fmt.Sprintf("%d", newTrainee.ID)
@@ -102,4 +104,71 @@ func EditTraineeProfile(id uint64, trainee dto.TraineeEdit) (models.Trainee, err
 		return models.Trainee{}, err
 	}
 	return createdTrainee, nil
+}
+
+func CreateProgramRequest(request dto.ProgramRequest) (models.Request, error) {
+	trainee, err := GetTraineeById(request.TraineeID)
+	if err != nil {
+		return models.Request{}, err
+	}
+	activeDays := models.ActiveDays{
+		Monday:    request.ActiveDays[0],
+		Tuesday:   request.ActiveDays[1],
+		Wednesday: request.ActiveDays[2],
+		Thursday:  request.ActiveDays[3],
+		Friday:    request.ActiveDays[4],
+		Saturday:  request.ActiveDays[5],
+		Sunday:    request.ActiveDays[6],
+	}
+
+	if err := database.DB.Create(&activeDays).Error; err != nil {
+		return models.Request{}, err
+	}
+	newRequest := models.Request{
+		TraineeID:    request.TraineeID,
+		TrainerID:    request.TrainerID,
+		Description:  request.Description,
+		Date:         time.Now(),
+		TraineeName:  trainee.User.FirstName + " " + trainee.User.LastName,
+		Status:       "CoachPending",
+		Price:        0,
+		ActiveDaysID: activeDays.ID,
+		ActiveDays:   activeDays,
+	}
+
+	tx := database.DB.Begin()
+
+	if err := tx.Create(&newRequest).Error; err != nil {
+		return models.Request{}, err
+	}
+	trainee.RequestID = newRequest.ID
+	if err := tx.Model(&trainee).Updates(models.Trainee{RequestID: trainee.RequestID}).Error; err != nil {
+		tx.Rollback()
+		return models.Request{}, err
+	}
+
+	trainer, err := GetTrainerById(request.TrainerID)
+	if err != nil {
+		return models.Request{}, err
+	}
+	trainer.RequestIDs = append(trainer.RequestIDs, int64(newRequest.ID))
+	if err := tx.Save(&trainer).Error; err != nil {
+		tx.Rollback()
+		return models.Request{}, err
+	}
+
+	tx.Commit()
+
+	return GetRequest(newRequest.ID)
+}
+
+func GetRequest(id uint) (models.Request, error) {
+	var req models.Request
+	if err := database.DB.Preload("ActiveDays").Where("id = ?", id).First(&req).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.Request{}, nil
+		}
+		return models.Request{}, err
+	}
+	return req, nil
 }

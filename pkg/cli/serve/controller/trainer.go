@@ -16,6 +16,21 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Get("/profile/:id", c.GetTrainerProfile)
 	group.Put("/profile/:id", c.EditProfile)
 	group.Get("/trainees/:id", c.GetTrainees)
+	group.Get("/:id", c.getTrainer)
+	group.Get("/requests/:id", c.GetRequests)
+	group.Put("/request/set-price", c.SetPrice)
+}
+
+func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
+	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+	trainer, err := serve.GetTrainerById(uint(id))
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(trainer)
 }
 
 // EditProfile
@@ -113,9 +128,66 @@ func (c *TrainerController) GetTrainees(ctx *fiber.Ctx) error {
 		return err
 	}
 	var trainees []dto.TraineeInTrainerPage
-	for _, t := range trainerModel.Trainees {
+	for _, i := range trainerModel.TraineeIDs {
+		t, err := serve.GetTraineeById(uint(i))
+		if err != nil {
+			return err
+		}
 		t1 := dto.TraineeInTrainerPage{Name: t.User.FirstName + " " + t.User.LastName}
 		trainees = append(trainees, t1)
 	}
 	return ctx.JSON(trainees)
+}
+
+// GetRequests
+// @Summary Get requests
+// @Description get requests of a trainer by ID
+// @Tags trainer
+// @Accept json
+// @Produce json
+// @Param id path string true "Trainer ID"
+// @Success 200 {object} []dto.RequestsInTrainerPage "Trainer requests"
+// @Failure 404 {object} string "Trainer not found"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /trainer/requests/{id} [get]
+func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
+	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+	trainerModel, err := serve.GetTrainerById(uint(id))
+	if err != nil {
+		return err
+	}
+	var reqs []dto.RequestsInTrainerPage
+	requests, err := serve.GetRequests(trainerModel)
+	if err != nil {
+		return err
+	}
+	for _, r := range requests {
+		r1 := dto.RequestsInTrainerPage{
+			TraineeName: r.TraineeName,
+			Date:        r.Date,
+			Price:       r.Price,
+			Status:      r.Status,
+		}
+		reqs = append(reqs, r1)
+	}
+	return ctx.JSON(reqs)
+}
+
+func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
+	var setPrice dto.TrainerSetPrice
+	if err := ctx.BodyParser(&setPrice); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+
+	if err := utils.ValidateUser(setPrice); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
+	}
+	req, err := serve.SetPrice(setPrice)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(req)
 }
