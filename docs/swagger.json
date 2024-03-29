@@ -5,6 +5,48 @@
     },
     "paths": {
         "/trainee/profile/{id}": {
+            "get": {
+                "description": "Retrieves the profile information of a trainee by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Get trainee profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trainee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trainee profile information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TraineeResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Updates the profile information of a trainee by UserID",
                 "consumes": [
@@ -63,9 +105,110 @@
                 }
             }
         },
+        "/trainee/request/{id}": {
+            "get": {
+                "description": "Retrieves the request of a trainee by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Get trainee request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trainee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trainee request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RequestsInTrainerPage"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new program request with the provided data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Create program request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trainee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Program request data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgramRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created program request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgramRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Invalid user ID or not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainer/profile/{id}": {
             "get": {
-                "description": "Retrieves the profile information of a trainer by ID",
+                "description": "get trainees of a trainer by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -75,7 +218,7 @@
                 "tags": [
                     "trainer"
                 ],
-                "summary": "Get trainer profile",
+                "summary": "Get trainees",
                 "parameters": [
                     {
                         "type": "string",
@@ -87,9 +230,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Trainer profile information",
+                        "description": "Trainer trainees",
                         "schema": {
-                            "$ref": "#/definitions/dto.TrainerResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.TraineeInTrainerPage"
+                            }
                         }
                     },
                     "404": {
@@ -147,6 +293,53 @@
                         "description": "Invalid request payload",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/trainer/requests/{id}": {
+            "get": {
+                "description": "get requests of a trainer by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "Get requests",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trainer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trainer requests",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.RequestsInTrainerPage"
+                            }
                         }
                     },
                     "404": {
@@ -267,8 +460,58 @@
         }
     },
     "definitions": {
+        "dto.ProgramRequest": {
+            "type": "object",
+            "required": [
+                "active_days",
+                "traineeID",
+                "trainerID"
+            ],
+            "properties": {
+                "active_days": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "traineeID": {
+                    "type": "integer"
+                },
+                "trainerID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RequestsInTrainerPage": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "trainee_name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TraineeEdit": {
             "type": "object"
+        },
+        "dto.TraineeInTrainerPage": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
         },
         "dto.TraineeProfileCard": {
             "type": "object",
@@ -283,9 +526,6 @@
                     "type": "string"
                 },
                 "language": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 },
                 "status": {
@@ -323,7 +563,6 @@
                 "country",
                 "education",
                 "language",
-                "role",
                 "sport",
                 "status",
                 "user_name"
@@ -351,9 +590,6 @@
                     "type": "string"
                 },
                 "language": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 },
                 "sport": {
@@ -386,9 +622,6 @@
                     "type": "string"
                 },
                 "language": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 },
                 "status": {

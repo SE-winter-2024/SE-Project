@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/lib/pq"
+	"gorm.io/gorm"
+)
 
 type Trainer struct {
 	gorm.Model
@@ -17,6 +20,6 @@ type Trainer struct {
 	Education       string
 	ActiveDays      ActiveDays
 	ActiveDaysID    uint
-	Trainees        []Trainee
-	Requests        []Request
+	TraineeIDs      pq.Int64Array `gorm:"type:integer[]"`
+	RequestIDs      pq.Int64Array `gorm:"type:integer[]"`
 }

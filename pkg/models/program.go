@@ -11,10 +11,7 @@ type Request struct {
 	TraineeID    uint
 	TrainerID    uint
 	Date         time.Time
-	Payment      uint64
 	Status       string
-	CoachId      string
-	UserId       string
 	Description  string
 	Price        uint64
 	ActiveDaysID uint

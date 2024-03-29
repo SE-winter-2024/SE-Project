@@ -36,6 +36,7 @@ func SetUpDB() {
 		&models.Trainer{},
 		&models.Trainee{},
 		&models.ActiveDays{},
+		&models.Request{},
 	)
 }
 

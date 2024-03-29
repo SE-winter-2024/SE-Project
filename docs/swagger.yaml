@@ -1,5 +1,38 @@
 definitions:
+  dto.ProgramRequest:
+    properties:
+      active_days:
+        items:
+          type: boolean
+        type: array
+      description:
+        type: string
+      traineeID:
+        type: integer
+      trainerID:
+        type: integer
+    required:
+    - active_days
+    - traineeID
+    - trainerID
+    type: object
+  dto.RequestsInTrainerPage:
+    properties:
+      date:
+        type: string
+      price:
+        type: integer
+      status:
+        type: string
+      trainee_name:
+        type: string
+    type: object
   dto.TraineeEdit:
+    type: object
+  dto.TraineeInTrainerPage:
+    properties:
+      name:
+        type: string
     type: object
   dto.TraineeProfileCard:
     properties:
@@ -10,8 +43,6 @@ definitions:
       email:
         type: string
       language:
-        type: string
-      role:
         type: string
       status:
         type: string
@@ -47,8 +78,6 @@ definitions:
         type: string
       language:
         type: string
-      role:
-        type: string
       sport:
         type: string
       status:
@@ -65,7 +94,6 @@ definitions:
     - country
     - education
     - language
-    - role
     - sport
     - status
     - user_name
@@ -81,8 +109,6 @@ definitions:
       email:
         type: string
       language:
-        type: string
-      role:
         type: string
       status:
         type: string
@@ -166,6 +192,34 @@ info:
   contact: {}
 paths:
   /trainee/profile/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the profile information of a trainee by ID
+      parameters:
+      - description: Trainee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Trainee profile information
+          schema:
+            $ref: '#/definitions/dto.TraineeResponse'
+        "404":
+          description: Trainee not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get trainee profile
+      tags:
+      - trainee
     put:
       consumes:
       - application/json
@@ -204,11 +258,78 @@ paths:
       summary: Edit trainee profile
       tags:
       - trainee
+  /trainee/request/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the request of a trainee by ID
+      parameters:
+      - description: Trainee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Trainee request
+          schema:
+            $ref: '#/definitions/dto.RequestsInTrainerPage'
+        "404":
+          description: Trainee not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get trainee request
+      tags:
+      - trainee
+    post:
+      consumes:
+      - application/json
+      description: Creates a new program request with the provided data
+      parameters:
+      - description: Trainee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Program request data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProgramRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created program request
+          schema:
+            $ref: '#/definitions/dto.ProgramRequest'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Invalid user ID or not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create program request
+      tags:
+      - trainee
   /trainer/profile/{id}:
     get:
       consumes:
       - application/json
-      description: Retrieves the profile information of a trainer by ID
+      description: get trainees of a trainer by ID
       parameters:
       - description: Trainer ID
         in: path
@@ -219,9 +340,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: Trainer profile information
+          description: Trainer trainees
           schema:
-            $ref: '#/definitions/dto.TrainerResponse'
+            items:
+              $ref: '#/definitions/dto.TraineeInTrainerPage'
+            type: array
         "404":
           description: Trainer not found
           schema:
@@ -230,7 +353,7 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Get trainer profile
+      summary: Get trainees
       tags:
       - trainer
     put:
@@ -269,6 +392,37 @@ paths:
           schema:
             type: string
       summary: Edit trainer profile
+      tags:
+      - trainer
+  /trainer/requests/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get requests of a trainer by ID
+      parameters:
+      - description: Trainer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Trainer requests
+          schema:
+            items:
+              $ref: '#/definitions/dto.RequestsInTrainerPage'
+            type: array
+        "404":
+          description: Trainer not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get requests
       tags:
       - trainer
   /user/login:

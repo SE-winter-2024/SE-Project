@@ -102,3 +102,34 @@ func EditTrainerProfile(id uint64, trainer dto.TrainerEdit) (models.Trainer, err
 	}
 	return createdTrainer, nil
 }
+
+func GetRequests(trainer models.Trainer) ([]models.Request, error) {
+	var requests []models.Request
+	for _, i := range trainer.RequestIDs {
+		r, err := GetRequest(uint(i))
+		if err != nil {
+			return nil, err
+		}
+		requests = append(requests, r)
+	}
+	return requests, nil
+}
+
+func SetPrice(setPrice dto.TrainerSetPrice) (models.Request, error) {
+	r, err := GetRequest(setPrice.RequestId)
+	if err != nil {
+		return models.Request{}, err
+	}
+	tx := database.DB.Begin()
+	if setPrice.Rejected {
+		r.Status = "TrainerRejected"
+	} else {
+		r.Price = uint64(setPrice.Price)
+	}
+	if err := tx.Save(&r).Error; err != nil {
+		tx.Rollback()
+		return models.Request{}, err
+	}
+	tx.Commit()
+	return r, nil
+}
