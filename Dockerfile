@@ -28,7 +28,7 @@ USER application
 WORKDIR /app
 
 COPY --from=builder --chown=application:application /app/my-app ./
-COPY --chown=application:application .env ./
+RUN touch .env
 RUN mkdir -p storage/tmp
 
 CMD ["./my-app", "serve"]
