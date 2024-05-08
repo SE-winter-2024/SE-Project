@@ -14,12 +14,32 @@ definitions:
         type: array
       description:
         type: string
+      id:
+        type: integer
       traineeID:
         type: integer
       trainerID:
         type: integer
     required:
     - active_days
+    - traineeID
+    - trainerID
+    type: object
+  dto.ProgramRequestSetPrice:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      status:
+        type: string
+      traineeID:
+        type: integer
+      trainerID:
+        type: integer
+    required:
     - traineeID
     - trainerID
     type: object
@@ -35,6 +55,42 @@ definitions:
         type: string
     type: object
   dto.TraineeEdit:
+    properties:
+      active_days:
+        items:
+          type: boolean
+        type: array
+      contact:
+        type: string
+      country:
+        type: string
+      height:
+        type: integer
+      language:
+        type: string
+      medicalHistory:
+        type: string
+      sports:
+        type: string
+      status:
+        type: string
+      user:
+        $ref: '#/definitions/dto.User'
+      user_name:
+        type: string
+      weight:
+        type: integer
+    required:
+    - active_days
+    - contact
+    - country
+    - height
+    - language
+    - medicalHistory
+    - sports
+    - status
+    - user_name
+    - weight
     type: object
   dto.TraineeInTrainerPage:
     properties:
@@ -90,7 +146,7 @@ definitions:
       status:
         type: string
       user:
-        $ref: '#/definitions/models.User'
+        $ref: '#/definitions/dto.User'
       user_name:
         type: string
     required:
@@ -132,6 +188,18 @@ definitions:
         type: string
       trainer_profile_card:
         $ref: '#/definitions/dto.TrainerProfileCard'
+    type: object
+  dto.TrainerSetPrice:
+    properties:
+      price:
+        type: integer
+      rejected:
+        type: boolean
+      requestId:
+        type: integer
+    required:
+    - price
+    - requestId
     type: object
   dto.User:
     properties:
@@ -192,8 +260,6 @@ definitions:
         type: string
       wallet:
         type: integer
-    type: object
-  models.User:
     type: object
 info:
   contact: {}
@@ -332,6 +398,36 @@ paths:
       summary: Create program request
       tags:
       - trainee
+  /trainer/price:
+    put:
+      consumes:
+      - application/json
+      description: Trainer sets the price for a training request
+      parameters:
+      - description: Trainer Set Price Data
+        in: body
+        name: TrainerSetPrice
+        required: true
+        schema:
+          $ref: '#/definitions/dto.TrainerSetPrice'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProgramRequestSetPrice'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Set price for a request
+      tags:
+      - Trainer
   /trainer/profile/{id}:
     get:
       consumes:
@@ -480,7 +576,7 @@ paths:
         "200":
           description: User information
           schema:
-            $ref: '#/definitions/dto.UserResponse'
+            $ref: '#/definitions/dto.User'
         "400":
           description: Invalid request payload
           schema:

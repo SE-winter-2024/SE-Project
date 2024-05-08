@@ -1,8 +1,9 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Request struct {
@@ -13,7 +14,7 @@ type Request struct {
 	Date         time.Time
 	Status       string
 	Description  string
-	Price        uint64
+	Price        uint
 	ActiveDaysID uint
 	ActiveDays   ActiveDays
 }

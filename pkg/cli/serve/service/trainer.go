@@ -1,11 +1,12 @@
 package serve
 
 import (
+	"errors"
+	"fmt"
+
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/models"
-	"errors"
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -32,7 +33,7 @@ func GetTrainerById(id uint) (models.Trainer, error) {
 }
 
 func EditTrainerProfile(id uint64, trainer dto.TrainerEdit) (models.Trainer, error) {
-	user, err := GetUserById(id)
+	user, _ := GetUserById(id)
 
 	activeDays := models.ActiveDays{
 		Monday:    trainer.ActiveDays[0],
@@ -124,7 +125,8 @@ func SetPrice(setPrice dto.TrainerSetPrice) (models.Request, error) {
 	if setPrice.Rejected {
 		r.Status = "TrainerRejected"
 	} else {
-		r.Price = uint64(setPrice.Price)
+		r.Price = setPrice.Price
+		r.Status = "TraineePending"
 	}
 	if err := tx.Save(&r).Error; err != nil {
 		tx.Rollback()

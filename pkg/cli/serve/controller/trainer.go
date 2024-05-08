@@ -1,13 +1,14 @@
 package serve
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strconv"
 )
 
 type TrainerController struct{}
@@ -176,6 +177,17 @@ func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
 	return ctx.JSON(reqs)
 }
 
+// SetPrice updates the price
+// @Summary Set price for a request
+// @Description Trainer sets the price for a training request
+// @Tags Trainer
+// @Accept json
+// @Produce json
+// @Param TrainerSetPrice body dto.TrainerSetPrice true "Trainer Set Price Data"
+// @Success 200 {object} dto.ProgramRequestSetPrice
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal server error"
+// @Router /trainer/price [put]
 func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 	var setPrice dto.TrainerSetPrice
 	if err := ctx.BodyParser(&setPrice); err != nil {
@@ -189,5 +201,13 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(req)
+	res := dto.ProgramRequestSetPrice{
+		ID:          req.ID,
+		TrainerID:   req.TrainerID,
+		TraineeID:   req.TraineeID,
+		Price:       req.Price,
+		Description: req.Description,
+		Status:      req.Status,
+	}
+	return ctx.JSON(res)
 }

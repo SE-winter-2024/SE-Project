@@ -1,13 +1,14 @@
 package serve
 
 import (
+	"errors"
+	"fmt"
+	"time"
+
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/models"
-	"errors"
-	"fmt"
 	"gorm.io/gorm"
-	"time"
 )
 
 func GetTraineeProfile(id uint) (models.Trainee, error) {
@@ -33,7 +34,7 @@ func GetTraineeById(id uint) (models.Trainee, error) {
 }
 
 func EditTraineeProfile(id uint64, trainee dto.TraineeEdit) (models.Trainee, error) {
-	user, err := GetUserById(id)
+	user, _ := GetUserById(id)
 
 	activeDays := models.ActiveDays{
 		Monday:    trainee.ActiveDays[0],

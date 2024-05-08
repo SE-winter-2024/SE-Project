@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -47,34 +46,35 @@ type SetProgram struct {
 }
 
 type TrainerEdit struct {
-	User            models.User `json:"user"`
-	UserName        string      `json:"user_name" validate:"required"`
-	Status          string      `json:"status" validate:"required"`
-	CoachExperience uint        `json:"coach_experience" validate:"required"`
-	Contact         string      `json:"contact" validate:"required"`
-	Language        string      `json:"language" validate:"required"`
-	Country         string      `json:"country" validate:"required"`
-	Sport           string      `json:"sport" validate:"required"`
-	Achievements    string      `json:"achievements" validate:"required"`
-	Education       string      `json:"education" validate:"required"`
-	ActiveDays      []bool      `json:"active_days" validate:"required"`
+	User            User   `json:"user"`
+	UserName        string `json:"user_name" validate:"required"`
+	Status          string `json:"status" validate:"required"`
+	CoachExperience uint   `json:"coach_experience" validate:"required"`
+	Contact         string `json:"contact" validate:"required"`
+	Language        string `json:"language" validate:"required"`
+	Country         string `json:"country" validate:"required"`
+	Sport           string `json:"sport" validate:"required"`
+	Achievements    string `json:"achievements" validate:"required"`
+	Education       string `json:"education" validate:"required"`
+	ActiveDays      []bool `json:"active_days" validate:"required"`
 }
 
 type TraineeEdit struct {
-	User           models.User `json:"user"`
-	Height         uint        `json:"height" validate:"required"`
-	Weight         uint        `json:"weight" validate:"required"`
-	Sports         string      `json:"sports" validate:"required"`
-	UserName       string      `json:"user_name" validate:"required"`
-	Status         string      `json:"status" validate:"required"`
-	Contact        string      `json:"contact" validate:"required"`
-	Language       string      `json:"language" validate:"required"`
-	Country        string      `json:"country" validate:"required"`
-	MedicalHistory string      `json:"medicalHistory" validate:"required"`
-	ActiveDays     []bool      `json:"active_days" validate:"required"`
+	User           User   `json:"user"`
+	Height         uint   `json:"height" validate:"required"`
+	Weight         uint   `json:"weight" validate:"required"`
+	Sports         string `json:"sports" validate:"required"`
+	UserName       string `json:"user_name" validate:"required"`
+	Status         string `json:"status" validate:"required"`
+	Contact        string `json:"contact" validate:"required"`
+	Language       string `json:"language" validate:"required"`
+	Country        string `json:"country" validate:"required"`
+	MedicalHistory string `json:"medicalHistory" validate:"required"`
+	ActiveDays     []bool `json:"active_days" validate:"required"`
 }
 
 type ProgramRequest struct {
+	ID          uint   `json:"id"`
 	TrainerID   uint   `json:"trainerID" validate:"required"`
 	TraineeID   uint   `json:"traineeID" validate:"required"`
 	Description string `json:"description"`
@@ -84,5 +84,5 @@ type ProgramRequest struct {
 type TrainerSetPrice struct {
 	RequestId uint `json:"requestId" validate:"required"`
 	Price     uint `json:"price" validate:"required"`
-	Rejected  bool `json:"rejected" validate:"required"`
+	Rejected  bool `json:"rejected"`
 }

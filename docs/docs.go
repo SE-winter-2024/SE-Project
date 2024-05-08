@@ -217,6 +217,52 @@ const docTemplate = `{
                 }
             }
         },
+        "/trainer/price": {
+            "put": {
+                "description": "Trainer sets the price for a training request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trainer"
+                ],
+                "summary": "Set price for a request",
+                "parameters": [
+                    {
+                        "description": "Trainer Set Price Data",
+                        "name": "TrainerSetPrice",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainerSetPrice"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgramRequestSetPrice"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainer/profile/{id}": {
             "get": {
                 "description": "get trainees of a trainer by ID",
@@ -442,7 +488,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User information",
                         "schema": {
-                            "$ref": "#/definitions/dto.UserResponse"
+                            "$ref": "#/definitions/dto.User"
                         }
                     },
                     "400": {
@@ -490,6 +536,36 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
+                "traineeID": {
+                    "type": "integer"
+                },
+                "trainerID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ProgramRequestSetPrice": {
+            "type": "object",
+            "required": [
+                "traineeID",
+                "trainerID"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
                 "traineeID": {
                     "type": "integer"
                 },
@@ -516,7 +592,57 @@ const docTemplate = `{
             }
         },
         "dto.TraineeEdit": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "active_days",
+                "contact",
+                "country",
+                "height",
+                "language",
+                "medicalHistory",
+                "sports",
+                "status",
+                "user_name",
+                "weight"
+            ],
+            "properties": {
+                "active_days": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean"
+                    }
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "medicalHistory": {
+                    "type": "string"
+                },
+                "sports": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/dto.User"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
         },
         "dto.TraineeInTrainerPage": {
             "type": "object",
@@ -612,7 +738,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/models.User"
+                    "$ref": "#/definitions/dto.User"
                 },
                 "user_name": {
                     "type": "string"
@@ -659,6 +785,24 @@ const docTemplate = `{
                 },
                 "trainer_profile_card": {
                     "$ref": "#/definitions/dto.TrainerProfileCard"
+                }
+            }
+        },
+        "dto.TrainerSetPrice": {
+            "type": "object",
+            "required": [
+                "price",
+                "requestId"
+            ],
+            "properties": {
+                "price": {
+                    "type": "integer"
+                },
+                "rejected": {
+                    "type": "boolean"
+                },
+                "requestId": {
+                    "type": "integer"
                 }
             }
         },
@@ -748,9 +892,6 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
-        },
-        "models.User": {
-            "type": "object"
         }
     }
 }`

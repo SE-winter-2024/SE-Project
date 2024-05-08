@@ -1,13 +1,14 @@
 package serve
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strconv"
 )
 
 type TraineeController struct{}
@@ -136,9 +137,11 @@ func (c *TraineeController) CreateProgramRequest(ctx *fiber.Ctx) error {
 		return err
 	}
 	r := dto.ProgramRequest{
+		ID:          requestModel.ID,
 		TrainerID:   requestModel.TrainerID,
 		TraineeID:   requestModel.TraineeID,
 		Description: requestModel.Description,
+		ActiveDays:  request.ActiveDays,
 	}
 	return ctx.JSON(r)
 }

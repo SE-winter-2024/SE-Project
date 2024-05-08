@@ -39,7 +39,7 @@ type TraineeInTrainerPage struct {
 type RequestsInTrainerPage struct {
 	TraineeName string    `json:"trainee_name,omitempty"`
 	Date        time.Time `json:"date"`
-	Price       uint64    `json:"price,omitempty"`
+	Price       uint      `json:"price,omitempty"`
 	Status      string    `json:"status,omitempty"`
 }
 
@@ -81,4 +81,13 @@ type TraineeProfileCard struct {
 	Contact  string `json:"contact,omitempty"`
 	Language string `json:"language,omitempty"`
 	Country  string `json:"country,omitempty"`
+}
+
+type ProgramRequestSetPrice struct {
+	ID          uint   `json:"id"`
+	TrainerID   uint   `json:"trainerID" validate:"required"`
+	TraineeID   uint   `json:"traineeID" validate:"required"`
+	Description string `json:"description"`
+	Price       uint   `json:"price"`
+	Status      string `json:"status"`
 }

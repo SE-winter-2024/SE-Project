@@ -73,7 +73,7 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body dto.User true "User details"
-// @Success 200 {object} dto.UserResponse "User information"
+// @Success 200 {object} dto.User "User information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /user/sign-up [post]
