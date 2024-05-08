@@ -227,7 +227,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Trainer"
+                    "trainer"
                 ],
                 "summary": "Set price for a request",
                 "parameters": [

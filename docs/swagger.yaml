@@ -427,7 +427,7 @@ paths:
             type: string
       summary: Set price for a request
       tags:
-      - Trainer
+      - trainer
   /trainer/profile/{id}:
     get:
       consumes:
