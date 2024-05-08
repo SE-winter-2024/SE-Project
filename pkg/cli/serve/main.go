@@ -1,15 +1,34 @@
 package serve
 
 import (
-	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller"
 	"os"
 
+	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller"
+
+	_ "bitbucket.org/dyfrag-internal/mass-media-core/docs"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/configs"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/cobra"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
+// @title						SE Project
+// @version						1.0
+// @description					Software Engineering Course Project
+// @contact.name				Mahdieh Moghiseh
+// @contact.email				mahdiehmoghiseh81@gmail.com
+// @securityDefinitions.apikey	AdminID
+// @in							header
+// @name						X-Admin-Id
+// @securityDefinitions.apikey	UserID
+// @in							header
+// @name						X-User-Id
+// @securityDefinitions.apikey	APIKey
+// @in							header
+// @name						api-key
+// @BasePath					/v1
+// @externalDocs.description	OpenAPI
 func main() {
 	app := fiber.New()
 	initialization()
@@ -17,7 +36,8 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
-	app.Static("/swagger", "./././docs")
+
+	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
 	user := app.Group("/user")
 	var userController serve.UserController

@@ -20,6 +20,11 @@ type User struct {
 	Wallet      uint64 `json:"wallet"`
 }
 
+type LogIn struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func (user *User) HashPassword() error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
 	if err != nil {

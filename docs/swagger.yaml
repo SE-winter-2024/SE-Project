@@ -1,4 +1,11 @@
 definitions:
+  dto.LogIn:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   dto.ProgramRequest:
     properties:
       active_days:
@@ -426,23 +433,17 @@ paths:
       tags:
       - trainer
   /user/login:
-    get:
+    post:
       consumes:
       - application/json
       description: Logs in a user using email and password
       parameters:
-      - description: Email
+      - description: Email and password
         in: body
         name: request
         required: true
         schema:
-          type: string
-      - description: Password
-        in: body
-        name: request
-        required: true
-        schema:
-          type: string
+          $ref: '#/definitions/dto.LogIn'
       produces:
       - application/json
       responses:

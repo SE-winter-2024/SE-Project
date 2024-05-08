@@ -369,7 +369,7 @@ const docTemplate = `{
             }
         },
         "/user/login": {
-            "get": {
+            "post": {
                 "description": "Logs in a user using email and password",
                 "consumes": [
                     "application/json"
@@ -383,21 +383,12 @@ const docTemplate = `{
                 "summary": "Log in user",
                 "parameters": [
                     {
-                        "description": "Email",
+                        "description": "Email and password",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Password",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.LogIn"
                         }
                     }
                 ],
@@ -471,6 +462,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.LogIn": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ProgramRequest": {
             "type": "object",
             "required": [

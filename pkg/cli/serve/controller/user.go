@@ -1,13 +1,14 @@
 package serve
 
 import (
+	"fmt"
+	"net/http"
+
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils/authService"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type UserController struct{}
@@ -16,7 +17,7 @@ func (c *UserController) RegisterRoutes(group fiber.Router) {
 	group.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Welcome to the user group!")
 	})
-	group.Get("/login", c.LogIn)
+	group.Post("/login", c.LogIn)
 
 	group.Post("/sign-up", c.SignUp)
 }
@@ -27,17 +28,13 @@ func (c *UserController) RegisterRoutes(group fiber.Router) {
 // @Tags user
 // @Accept json
 // @Produce json
-// @Param request body string true "Email"
-// @Param request body string true "Password"
+// @Param request body dto.LogIn true "Email and password"
 // @Success 200 {object} dto.UserResponse "User information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /user/login [get]
+// @Router /user/login [post]
 func (c *UserController) LogIn(ctx *fiber.Ctx) error {
-	var loginRequest struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var loginRequest dto.LogIn
 	if err := ctx.BodyParser(&loginRequest); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
