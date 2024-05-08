@@ -180,7 +180,7 @@ func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
 // SetPrice updates the price
 // @Summary Set price for a request
 // @Description Trainer sets the price for a training request
-// @Tags Trainer
+// @Tags trainer
 // @Accept json
 // @Produce json
 // @Param TrainerSetPrice body dto.TrainerSetPrice true "Trainer Set Price Data"
