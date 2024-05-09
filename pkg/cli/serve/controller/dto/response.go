@@ -2,6 +2,11 @@ package dto
 
 import "time"
 
+type Respose struct {
+	Message string `json:"message"`
+	Success bool   `json:"success"`
+}
+
 type UserResponse struct {
 	Email       string `json:"email,omitempty"`
 	FirstName   string `json:"first_name,omitempty"`

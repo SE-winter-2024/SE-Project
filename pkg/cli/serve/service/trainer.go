@@ -3,6 +3,7 @@ package serve
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
@@ -134,4 +135,58 @@ func SetPrice(setPrice dto.TrainerSetPrice) (models.Request, error) {
 	}
 	tx.Commit()
 	return r, nil
+}
+
+func CreateTrainingProgram(program dto.TrainingProgram) (models.TrainingProgram, error) {
+	request, _ := GetRequest(program.RequestID)
+	layout := "2006-01-02"
+	startDate, err := time.Parse(layout, program.StartDate)
+	if err != nil {
+		return models.TrainingProgram{}, err
+	}
+	endDate, err := time.Parse(layout, program.EndDate)
+	if err != nil {
+		return models.TrainingProgram{}, err
+	}
+	newProgram := models.TrainingProgram{
+		TraineeID:      request.TraineeID,
+		TrainerID:      request.TrainerID,
+		Title:          program.Title,
+		Description:    program.Description,
+		Price:          request.Price,
+		StartDate:      startDate,
+		EndDate:        endDate,
+		ActivityDaysID: request.ActiveDays.ID,
+	}
+
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Create(&newProgram).Error; err != nil {
+		tx.Rollback()
+		return models.TrainingProgram{}, err
+	}
+
+	tx.Commit()
+
+	createdProgram, err := GetTrainingProgram(newProgram.ID)
+	if err != nil {
+		return models.TrainingProgram{}, err
+	}
+	return createdProgram, nil
+}
+
+func GetTrainingProgram(id uint) (models.TrainingProgram, error) {
+	var p models.TrainingProgram
+	if err := database.DB.Where("id = ?", id).First(&p).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.TrainingProgram{}, nil
+		}
+		return models.TrainingProgram{}, err
+	}
+	return p, nil
 }

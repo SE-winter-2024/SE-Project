@@ -32,28 +32,34 @@ type ActiveDays struct {
 
 type TrainingProgram struct {
 	gorm.Model
-	TraineeID    uint
-	Title        string
-	Description  string
-	StartDate    time.Time
-	EndDate      time.Time
-	ActivityDays []ActiveDays
+	TraineeID        uint
+	TrainerID        uint
+	Title            string
+	Description      string
+	Price            uint
+	StartDate        time.Time
+	EndDate          time.Time
+	ActivityDaysID   uint
+	SportActivityIDs []SportActivity `gorm:"foreignKey:TrainingProgramID"`
 }
 
 type SportActivity struct {
 	gorm.Model
-	OrderNumber   uint
-	ExpectedValue uint
-	Value         uint
-	Status        string
-	Sport
+	OrderNumber       uint
+	ExpectedValue     uint
+	Value             uint
+	Status            string
+	TrainingProgramID uint
+	Sport             Sport `gorm:"references:ID"`
+	SportID           uint  `gorm:"foreignKey:VideoID"`
 }
 
 type Sport struct {
 	gorm.Model
 	Title       string
 	Description string
-	Video       Media
+	VideoID     uint  `gorm:"foreignKey:VideoID"`
+	Video       Media `gorm:"references:ID"`
 }
 
 type Media struct {

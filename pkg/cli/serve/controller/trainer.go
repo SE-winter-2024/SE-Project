@@ -20,6 +20,7 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Get("/:id", c.getTrainer)
 	group.Get("/requests/:id", c.GetRequests)
 	group.Put("/request/set-price", c.SetPrice)
+	group.Post("/program", c.CreateTrainingProgram)
 }
 
 func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
@@ -208,6 +209,27 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 		Price:       req.Price,
 		Description: req.Description,
 		Status:      req.Status,
+	}
+	return ctx.JSON(res)
+}
+
+func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
+	var program dto.TrainingProgram
+	if err := ctx.BodyParser(&program); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+
+	if err := utils.ValidateUser(program); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
+	}
+	programModel, err := serve.CreateTrainingProgram(program)
+	if err != nil {
+		return err
+	}
+	fmt.Println(programModel)
+	res := dto.Respose{
+		Message: "Training program created",
+		Success: true,
 	}
 	return ctx.JSON(res)
 }
