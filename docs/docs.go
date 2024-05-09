@@ -159,6 +159,57 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "description": "Change request status by trainee",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Change request status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Trainee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request Change Status",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TraineeChangeStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trainee Change Status",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgramRequestSetPrice"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Creates a new program request with the provided data",
                 "consumes": [
@@ -591,6 +642,17 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.TraineeChangeStatus": {
+            "type": "object",
+            "properties": {
+                "request_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.TraineeEdit": {
             "type": "object",
             "required": [
@@ -634,7 +696,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/dto.User"
+                    "$ref": "#/definitions/dto.UserEdit"
                 },
                 "user_name": {
                     "type": "string"
@@ -738,7 +800,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/dto.User"
+                    "$ref": "#/definitions/dto.UserEdit"
                 },
                 "user_name": {
                     "type": "string"
@@ -852,6 +914,47 @@ const docTemplate = `{
                 "phone_number": {
                     "type": "string",
                     "minLength": 11
+                },
+                "wallet": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserEdit": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "block": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "info_id": {
+                    "type": "string"
+                },
+                "info_type": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
                 },
                 "wallet": {
                     "type": "integer"

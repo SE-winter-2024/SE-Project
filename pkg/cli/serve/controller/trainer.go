@@ -222,11 +222,10 @@ func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
 	if err := utils.ValidateUser(program); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 	}
-	programModel, err := serve.CreateTrainingProgram(program)
+	_, err := serve.CreateTrainingProgram(program)
 	if err != nil {
 		return err
 	}
-	fmt.Println(programModel)
 	res := dto.Respose{
 		Message: "Training program created",
 		Success: true,

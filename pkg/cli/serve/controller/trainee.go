@@ -19,6 +19,7 @@ func (c *TraineeController) RegisterRoutes(group fiber.Router) {
 	group.Post("/request/:id", c.CreateProgramRequest)
 	group.Get("/:id", c.getTrainee)
 	group.Get("/request/:id", c.GetRequest)
+	group.Put("/request/:id", c.ChangeStatus)
 }
 
 func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
@@ -177,4 +178,47 @@ func (c *TraineeController) GetRequest(ctx *fiber.Ctx) error {
 		Status: r.Status,
 	}
 	return ctx.JSON(req)
+}
+
+// ChangeStatus
+// @Summary Change request status
+// @Description Change request status by trainee
+// @Tags trainee
+// @Accept json
+// @Produce json
+// @Param id path string true "Trainee ID"
+// @Param request body dto.TraineeChangeStatus true "Request Change Status"
+// @Success 200 {object} dto.ProgramRequestSetPrice "Trainee Change Status"
+// @Failure 404 {object} string "Trainee not found"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /trainee/request/{id} [put]
+func (c *TraineeController) ChangeStatus(ctx *fiber.Ctx) error {
+	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	if err != nil {
+		return err
+	}
+	trainee, err := serve.GetTraineeById(uint(id))
+	if err != nil {
+		return err
+	}
+	var change dto.TraineeChangeStatus
+	if err := ctx.BodyParser(&change); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+	if change.RequestID != trainee.RequestID {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid Request ID"})
+	}
+	req, err := serve.ChangeStatus(change)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+	}
+	res := dto.ProgramRequestSetPrice{
+		ID:          req.ID,
+		TrainerID:   req.TrainerID,
+		TraineeID:   req.TraineeID,
+		Description: req.Description,
+		Price:       req.Price,
+		Status:      req.Status,
+	}
+	return ctx.JSON(res)
 }
