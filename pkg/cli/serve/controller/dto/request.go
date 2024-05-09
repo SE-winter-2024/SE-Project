@@ -109,3 +109,8 @@ type TrainingProgram struct {
 	StartDate   string `json:"start_date" validate:"required"`
 	EndDate     string `json:"end_date" validate:"required"`
 }
+
+type TraineeChangeStatus struct {
+	RequestID uint   `json:"request_id"`
+	Status    string `json:"status"`
+}

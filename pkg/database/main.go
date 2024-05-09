@@ -46,6 +46,9 @@ func ClearDB() {
 		&models.User{},
 		&models.Trainer{},
 		&models.Trainee{},
+		&models.ActiveDays{},
+		&models.Request{},
+		&models.TrainingProgram{},
 	)
 	if err != nil {
 		fmt.Println("Error clearing database tables:", err)

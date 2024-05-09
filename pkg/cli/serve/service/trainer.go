@@ -124,10 +124,10 @@ func SetPrice(setPrice dto.TrainerSetPrice) (models.Request, error) {
 	}
 	tx := database.DB.Begin()
 	if setPrice.Rejected {
-		r.Status = "TrainerRejected"
+		r.Status = ProgramStatuses["TrainerRejected"]
 	} else {
 		r.Price = setPrice.Price
-		r.Status = "TraineePending"
+		r.Status = ProgramStatuses["TraineePending"]
 	}
 	if err := tx.Save(&r).Error; err != nil {
 		tx.Rollback()
@@ -139,6 +139,9 @@ func SetPrice(setPrice dto.TrainerSetPrice) (models.Request, error) {
 
 func CreateTrainingProgram(program dto.TrainingProgram) (models.TrainingProgram, error) {
 	request, _ := GetRequest(program.RequestID)
+	if request.Status != ProgramStatuses["TraineeAccepted"] {
+		return models.TrainingProgram{}, errors.New("invalid request")
+	}
 	layout := "2006-01-02"
 	startDate, err := time.Parse(layout, program.StartDate)
 	if err != nil {
@@ -167,6 +170,11 @@ func CreateTrainingProgram(program dto.TrainingProgram) (models.TrainingProgram,
 	}()
 
 	if err := tx.Create(&newProgram).Error; err != nil {
+		tx.Rollback()
+		return models.TrainingProgram{}, err
+	}
+	request.Status = ProgramStatuses["Confirmed"]
+	if err := tx.Save(&request).Error; err != nil {
 		tx.Rollback()
 		return models.TrainingProgram{}, err
 	}

@@ -11,6 +11,15 @@ import (
 	"gorm.io/gorm"
 )
 
+var ProgramStatuses = map[string]string{
+	"TrainerPending":  "TrainerPending",
+	"TraineePending":  "TraineePending",
+	"TrainerRejected": "TrainerRejected",
+	"TraineeRejected": "TraineeRejected",
+	"TraineeAccepted": "TraineeAccepted",
+	"Confirmed":       "Confirmed",
+}
+
 func GetTraineeProfile(id uint) (models.Trainee, error) {
 	var trainee models.Trainee
 	if err := database.DB.Preload("User").Preload("ActiveDays").Where("id = ?", id).First(&trainee).Error; err != nil {
@@ -131,7 +140,7 @@ func CreateProgramRequest(request dto.ProgramRequest) (models.Request, error) {
 		Description:  request.Description,
 		Date:         time.Now(),
 		TraineeName:  trainee.User.FirstName + " " + trainee.User.LastName,
-		Status:       "CoachPending",
+		Status:       "TrainerPending",
 		Price:        0,
 		ActiveDaysID: activeDays.ID,
 		ActiveDays:   activeDays,
@@ -172,4 +181,22 @@ func GetRequest(id uint) (models.Request, error) {
 		return models.Request{}, err
 	}
 	return req, nil
+}
+
+func ChangeStatus(change dto.TraineeChangeStatus) (models.Request, error) {
+	if ProgramStatuses[change.Status] == "" {
+		return models.Request{}, errors.New("invalid status")
+	}
+	r, err := GetRequest(change.RequestID)
+	if err != nil {
+		return models.Request{}, err
+	}
+	tx := database.DB.Begin()
+	r.Status = change.Status
+	if err := tx.Save(&r).Error; err != nil {
+		tx.Rollback()
+		return models.Request{}, err
+	}
+	tx.Commit()
+	return GetRequest(r.ID)
 }
