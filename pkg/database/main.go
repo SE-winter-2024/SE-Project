@@ -38,6 +38,8 @@ func SetUpDB() {
 		&models.ActiveDays{},
 		&models.Request{},
 		&models.TrainingProgram{},
+		&models.Sport{},
+		&models.SportActivity{},
 	)
 }
 
@@ -49,6 +51,8 @@ func ClearDB() {
 		&models.ActiveDays{},
 		&models.Request{},
 		&models.TrainingProgram{},
+		&models.Sport{},
+		&models.SportActivity{},
 	)
 	if err != nil {
 		fmt.Println("Error clearing database tables:", err)

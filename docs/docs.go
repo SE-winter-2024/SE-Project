@@ -31,9 +31,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Trainee ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -73,14 +73,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     },
                     {
                         "description": "Trainee profile data",
-                        "name": "trainer",
+                        "name": "trainee",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -132,9 +132,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Trainee ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -174,9 +174,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Trainee ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -225,9 +225,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Trainee ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -283,6 +283,13 @@ const docTemplate = `{
                 "summary": "Set price for a request",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Trainer Set Price Data",
                         "name": "TrainerSetPrice",
                         "in": "body",
@@ -314,7 +321,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/trainer/profile/{id}": {
+        "/trainer/profile/": {
             "get": {
                 "description": "get trainees of a trainer by ID",
                 "consumes": [
@@ -330,9 +337,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Trainer ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -344,6 +351,50 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/dto.TraineeInTrainerPage"
                             }
+                        }
+                    },
+                    "404": {
+                        "description": "Trainer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/trainer/profile/{id}": {
+            "get": {
+                "description": "Retrieves the profile information of a trainer by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "Get trainer profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trainer profile information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainerResponse"
                         }
                     },
                     "404": {
@@ -375,9 +426,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -418,7 +469,113 @@ const docTemplate = `{
                 }
             }
         },
-        "/trainer/requests/{id}": {
+        "/trainer/program": {
+            "post": {
+                "description": "create a training program by trainer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "creates a program",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Trainer Create Program data",
+                        "name": "TrainingProgram",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainingProgram"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Respose"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/trainer/program/sport-activity": {
+            "put": {
+                "description": "add sport activity to program by trainer",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "add sport activity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Add Sport Activity data",
+                        "name": "SportActivity",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.AddSportActivity"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Respose"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/trainer/requests/": {
             "get": {
                 "description": "get requests of a trainer by ID",
                 "consumes": [
@@ -434,9 +591,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Trainer ID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -559,6 +716,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.AddSportActivity": {
+            "type": "object",
+            "properties": {
+                "program_id": {
+                    "type": "integer"
+                },
+                "sport_activity": {
+                    "$ref": "#/definitions/dto.SportActivitRequest"
+                }
+            }
+        },
         "dto.LogIn": {
             "type": "object",
             "properties": {
@@ -638,6 +806,45 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "trainee_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Respose": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.SportActivitRequest": {
+            "type": "object",
+            "properties": {
+                "expected_value": {
+                    "type": "integer"
+                },
+                "order_number": {
+                    "type": "integer"
+                },
+                "sport": {
+                    "$ref": "#/definitions/dto.SportRequest"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SportRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
@@ -865,6 +1072,31 @@ const docTemplate = `{
                 },
                 "requestId": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.TrainingProgram": {
+            "type": "object",
+            "required": [
+                "end_date",
+                "request_id",
+                "start_date"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "request_id": {
+                    "type": "integer"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },

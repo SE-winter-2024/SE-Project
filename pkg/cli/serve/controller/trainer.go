@@ -14,13 +14,14 @@ import (
 type TrainerController struct{}
 
 func (c *TrainerController) RegisterRoutes(group fiber.Router) {
-	group.Get("/profile/:id", c.GetTrainerProfile)
-	group.Put("/profile/:id", c.EditProfile)
-	group.Get("/trainees/:id", c.GetTrainees)
+	group.Get("/profile/", c.GetTrainerProfile)
+	group.Put("/profile/", c.EditProfile)
+	group.Get("/trainees/", c.GetTrainees)
 	group.Get("/:id", c.getTrainer)
-	group.Get("/requests/:id", c.GetRequests)
+	group.Get("/requests/", c.GetRequests)
 	group.Put("/request/set-price", c.SetPrice)
 	group.Post("/program", c.CreateTrainingProgram)
+	group.Put("/program/sport-activity", c.AddSportActivity)
 }
 
 func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
@@ -41,7 +42,7 @@ func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
 // @Tags trainer
 // @Accept json
 // @Produce json
-// @Param id path string true "User ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Param trainer body dto.TrainerEdit true "Trainer profile data"
 // @Success 200 {object} dto.TrainerResponse "Updated trainer profile"
 // @Failure 400 {object} string "Invalid request payload"
@@ -49,7 +50,12 @@ func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainer/profile/{id} [put]
 func (c *TrainerController) EditProfile(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -74,13 +80,18 @@ func (c *TrainerController) EditProfile(ctx *fiber.Ctx) error {
 // @Tags trainer
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainer ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Success 200 {object} dto.TrainerResponse "Trainer profile information"
 // @Failure 404 {object} string "Trainer not found"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainer/profile/{id} [get]
 func (c *TrainerController) GetTrainerProfile(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -114,13 +125,18 @@ func (c *TrainerController) GetTrainerProfile(ctx *fiber.Ctx) error {
 // @Tags trainer
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainer ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Success 200 {object} []dto.TraineeInTrainerPage "Trainer trainees"
 // @Failure 404 {object} string "Trainer not found"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /trainer/profile/{id} [get]
+// @Router /trainer/profile/ [get]
 func (c *TrainerController) GetTrainees(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -147,12 +163,17 @@ func (c *TrainerController) GetTrainees(ctx *fiber.Ctx) error {
 // @Tags trainer
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainer ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Success 200 {object} []dto.RequestsInTrainerPage "Trainer requests"
 // @Failure 404 {object} string "Trainer not found"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /trainer/requests/{id} [get]
+// @Router /trainer/requests/ [get]
 func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
 	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
 	if err != nil {
 		return err
@@ -184,12 +205,18 @@ func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
 // @Tags trainer
 // @Accept json
 // @Produce json
+// @Param X-User-ID header string true "ID of the user"
 // @Param TrainerSetPrice body dto.TrainerSetPrice true "Trainer Set Price Data"
 // @Success 200 {object} dto.ProgramRequestSetPrice
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal server error"
 // @Router /trainer/price [put]
 func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
 	var setPrice dto.TrainerSetPrice
 	if err := ctx.BodyParser(&setPrice); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
@@ -213,7 +240,25 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 	return ctx.JSON(res)
 }
 
+// CreateTrainingProgram
+// @Summary creates a program
+// @Description create a training program by trainer
+// @Tags trainer
+// @Accept json
+// @Produce json
+// @Param X-User-ID header string true "ID of the user"
+// @Param TrainingProgram body dto.TrainingProgram true "Trainer Create Program data"
+// @Success 200 {object} dto.Respose
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal server error"
+// @Router /trainer/program [post]
 func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+
 	var program dto.TrainingProgram
 	if err := ctx.BodyParser(&program); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
@@ -228,6 +273,44 @@ func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
 	}
 	res := dto.Respose{
 		Message: "Training program created",
+		Success: true,
+	}
+	return ctx.JSON(res)
+}
+
+// AddSportActivity
+// @Summary add sport activity
+// @Description add sport activity to program by trainer
+// @Tags trainer
+// @Accept json
+// @Produce json
+// @Param X-User-ID header string true "ID of the user"
+// @Param SportActivity body dto.AddSportActivity true "Add Sport Activity data"
+// @Success 200 {object} dto.Respose
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal server error"
+// @Router /trainer/program/sport-activity [put]
+func (c *TrainerController) AddSportActivity(ctx *fiber.Ctx) error {
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+
+	var activity dto.AddSportActivity
+	if err := ctx.BodyParser(&activity); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+
+	if err := utils.ValidateUser(activity); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
+	}
+	_, err := serve.AddSportActivity(activity)
+	if err != nil {
+		return err
+	}
+	res := dto.Respose{
+		Message: "Sport Activity Added successfully",
 		Success: true,
 	}
 	return ctx.JSON(res)
