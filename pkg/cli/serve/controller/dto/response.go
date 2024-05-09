@@ -2,9 +2,10 @@ package dto
 
 import "time"
 
-type Respose struct {
+type Response struct {
 	Message string `json:"message"`
 	Success bool   `json:"success"`
+	ID      uint   `json:"id"`
 }
 
 type UserResponse struct {

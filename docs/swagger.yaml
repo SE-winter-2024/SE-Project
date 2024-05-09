@@ -61,8 +61,10 @@ definitions:
       trainee_name:
         type: string
     type: object
-  dto.Respose:
+  dto.Response:
     properties:
+      id:
+        type: integer
       message:
         type: string
       success:
@@ -85,6 +87,8 @@ definitions:
         type: string
       title:
         type: string
+      video_id:
+        type: integer
     type: object
   dto.TraineeChangeStatus:
     properties:
@@ -671,7 +675,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.Respose'
+            $ref: '#/definitions/dto.Response'
         "400":
           description: Invalid request payload
           schema:
@@ -706,7 +710,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.Respose'
+            $ref: '#/definitions/dto.Response'
         "400":
           description: Invalid request payload
           schema:
