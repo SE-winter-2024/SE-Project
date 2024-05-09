@@ -114,3 +114,20 @@ type TraineeChangeStatus struct {
 	RequestID uint   `json:"request_id"`
 	Status    string `json:"status"`
 }
+
+type AddSportActivity struct {
+	ProgramID    uint                `json:"program_id"`
+	SportActivit SportActivitRequest `json:"sport_activity"`
+}
+type SportActivitRequest struct {
+	OrderNumber   uint         `json:"order_number"`
+	ExpectedValue uint         `json:"expected_value"`
+	Value         uint         `json:"value"`
+	Sport         SportRequest `json:"sport"`
+}
+
+type SportRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	VideoID     uint   `json:"video_id"`
+}

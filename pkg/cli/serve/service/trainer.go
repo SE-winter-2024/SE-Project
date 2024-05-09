@@ -198,3 +198,55 @@ func GetTrainingProgram(id uint) (models.TrainingProgram, error) {
 	}
 	return p, nil
 }
+
+func AddSportActivity(activity dto.AddSportActivity) (models.TrainingProgram, error) {
+	program, _ := GetTrainingProgram(activity.ProgramID)
+	// var existingMedia models.Media
+	// if err := database.DB.Where("id = ?", activity.SportActivit.Sport.VideoID).First(&existingMedia).Error; err != nil {
+	// 	return models.TrainingProgram{}, fmt.Errorf("video does not exist")
+	// }
+
+	sport := models.Sport{
+		Title:       activity.SportActivit.Sport.Title,
+		Description: activity.SportActivit.Sport.Description,
+		VideoID:     activity.SportActivit.Sport.VideoID,
+	}
+
+	if err := database.DB.Create(&sport).Error; err != nil {
+		return models.TrainingProgram{}, err
+	}
+	sportActivity := models.SportActivity{
+		OrderNumber:       activity.SportActivit.OrderNumber,
+		ExpectedValue:     activity.SportActivit.ExpectedValue,
+		Value:             activity.SportActivit.Value,
+		Status:            "Not Done",
+		TrainingProgramID: activity.ProgramID,
+		Sport:             sport,
+		SportID:           sport.ID,
+	}
+	program.SportActivitys = append(program.SportActivitys, sportActivity)
+
+	tx := database.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Create(&sportActivity).Error; err != nil {
+		tx.Rollback()
+		return models.TrainingProgram{}, err
+	}
+	if err := tx.Save(&program).Error; err != nil {
+		tx.Rollback()
+		return models.TrainingProgram{}, err
+	}
+
+	tx.Commit()
+
+	updatedProgram, err := GetTrainingProgram(program.ID)
+	if err != nil {
+		return models.TrainingProgram{}, err
+	}
+	return updatedProgram, nil
+}
