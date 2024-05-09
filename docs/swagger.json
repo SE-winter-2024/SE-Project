@@ -493,7 +493,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Respose"
+                            "$ref": "#/definitions/dto.Response"
                         }
                     },
                     "400": {
@@ -546,7 +546,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Respose"
+                            "$ref": "#/definitions/dto.Response"
                         }
                     },
                     "400": {
@@ -799,9 +799,12 @@
                 }
             }
         },
-        "dto.Respose": {
+        "dto.Response": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -835,6 +838,9 @@
                 },
                 "title": {
                     "type": "string"
+                },
+                "video_id": {
+                    "type": "integer"
                 }
             }
         },

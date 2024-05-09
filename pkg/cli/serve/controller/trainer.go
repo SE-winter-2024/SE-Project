@@ -248,7 +248,7 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param X-User-ID header string true "ID of the user"
 // @Param TrainingProgram body dto.TrainingProgram true "Trainer Create Program data"
-// @Success 200 {object} dto.Respose
+// @Success 200 {object} dto.Response
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal server error"
 // @Router /trainer/program [post]
@@ -267,13 +267,14 @@ func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
 	if err := utils.ValidateUser(program); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 	}
-	_, err := serve.CreateTrainingProgram(program)
+	p, err := serve.CreateTrainingProgram(program)
 	if err != nil {
 		return err
 	}
-	res := dto.Respose{
+	res := dto.Response{
 		Message: "Training program created",
 		Success: true,
+		ID:      p.ID,
 	}
 	return ctx.JSON(res)
 }
@@ -286,7 +287,7 @@ func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param X-User-ID header string true "ID of the user"
 // @Param SportActivity body dto.AddSportActivity true "Add Sport Activity data"
-// @Success 200 {object} dto.Respose
+// @Success 200 {object} dto.Response
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal server error"
 // @Router /trainer/program/sport-activity [put]
@@ -305,13 +306,14 @@ func (c *TrainerController) AddSportActivity(ctx *fiber.Ctx) error {
 	if err := utils.ValidateUser(activity); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 	}
-	_, err := serve.AddSportActivity(activity)
+	s, err := serve.AddSportActivity(activity)
 	if err != nil {
 		return err
 	}
-	res := dto.Respose{
+	res := dto.Response{
 		Message: "Sport Activity Added successfully",
 		Success: true,
+		ID:      s.ID,
 	}
 	return ctx.JSON(res)
 }

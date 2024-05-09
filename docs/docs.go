@@ -504,7 +504,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Respose"
+                            "$ref": "#/definitions/dto.Response"
                         }
                     },
                     "400": {
@@ -557,7 +557,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.Respose"
+                            "$ref": "#/definitions/dto.Response"
                         }
                     },
                     "400": {
@@ -810,9 +810,12 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.Respose": {
+        "dto.Response": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -846,6 +849,9 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "video_id": {
+                    "type": "integer"
                 }
             }
         },

@@ -199,7 +199,7 @@ func GetTrainingProgram(id uint) (models.TrainingProgram, error) {
 	return p, nil
 }
 
-func AddSportActivity(activity dto.AddSportActivity) (models.TrainingProgram, error) {
+func AddSportActivity(activity dto.AddSportActivity) (models.SportActivity, error) {
 	program, _ := GetTrainingProgram(activity.ProgramID)
 	// var existingMedia models.Media
 	// if err := database.DB.Where("id = ?", activity.SportActivit.Sport.VideoID).First(&existingMedia).Error; err != nil {
@@ -213,7 +213,7 @@ func AddSportActivity(activity dto.AddSportActivity) (models.TrainingProgram, er
 	}
 
 	if err := database.DB.Create(&sport).Error; err != nil {
-		return models.TrainingProgram{}, err
+		return models.SportActivity{}, err
 	}
 	sportActivity := models.SportActivity{
 		OrderNumber:       activity.SportActivit.OrderNumber,
@@ -235,18 +235,13 @@ func AddSportActivity(activity dto.AddSportActivity) (models.TrainingProgram, er
 
 	if err := tx.Create(&sportActivity).Error; err != nil {
 		tx.Rollback()
-		return models.TrainingProgram{}, err
+		return models.SportActivity{}, err
 	}
 	if err := tx.Save(&program).Error; err != nil {
 		tx.Rollback()
-		return models.TrainingProgram{}, err
+		return models.SportActivity{}, err
 	}
 
 	tx.Commit()
-
-	updatedProgram, err := GetTrainingProgram(program.ID)
-	if err != nil {
-		return models.TrainingProgram{}, err
-	}
-	return updatedProgram, nil
+	return sportActivity, nil
 }
