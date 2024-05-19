@@ -14,12 +14,12 @@ import (
 type TraineeController struct{}
 
 func (c *TraineeController) RegisterRoutes(group fiber.Router) {
-	group.Put("/profile/:id", c.EditProfile)
-	group.Get("/profile/:id", c.GetTraineeProfile)
-	group.Post("/request/:id", c.CreateProgramRequest)
+	group.Put("/profile/", c.EditProfile)
+	group.Get("/profile/", c.GetTraineeProfile)
+	group.Post("/request/", c.CreateProgramRequest)
 	group.Get("/:id", c.getTrainee)
-	group.Get("/request/:id", c.GetRequest)
-	group.Put("/request/:id", c.ChangeStatus)
+	group.Get("/request/", c.GetRequest)
+	group.Put("/request/", c.ChangeStatus)
 }
 
 func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
@@ -40,18 +40,24 @@ func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param id path string true "User ID"
-// @Param trainer body dto.TraineeEdit true "Trainee profile data"
+// @Param X-User-ID header string true "ID of the user"
+// @Param trainee body dto.TraineeEdit true "Trainee profile data"
 // @Success 200 {object} dto.TraineeResponse "Updated trainee profile"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainee/profile/{id} [put]
 func (c *TraineeController) EditProfile(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
+
 	var trainee dto.TraineeEdit
 	if err := ctx.BodyParser(&trainee); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
@@ -73,13 +79,18 @@ func (c *TraineeController) EditProfile(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainee ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Success 200 {object} dto.TraineeResponse "Trainee profile information"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainee/profile/{id} [get]
 func (c *TraineeController) GetTraineeProfile(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -112,7 +123,7 @@ func (c *TraineeController) GetTraineeProfile(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainee ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Param request body dto.ProgramRequest true "Program request data"
 // @Success 200 {object} dto.ProgramRequest "Created program request"
 // @Failure 400 {object} string "Invalid request payload"
@@ -120,14 +131,20 @@ func (c *TraineeController) GetTraineeProfile(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainee/request/{id} [post]
 func (c *TraineeController) CreateProgramRequest(ctx *fiber.Ctx) error {
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
+	if err != nil {
+		return err
+	}
 	var request dto.ProgramRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
-	if err != nil {
-		return err
-	}
+
 	request.TraineeID = uint(id)
 
 	if err := utils.ValidateUser(request); err != nil {
@@ -153,13 +170,18 @@ func (c *TraineeController) CreateProgramRequest(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainee ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Success 200 {object} dto.RequestsInTrainerPage "Trainee request"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainee/request/{id} [get]
 func (c *TraineeController) GetRequest(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
@@ -186,14 +208,19 @@ func (c *TraineeController) GetRequest(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param id path string true "Trainee ID"
+// @Param X-User-ID header string true "ID of the user"
 // @Param request body dto.TraineeChangeStatus true "Request Change Status"
 // @Success 200 {object} dto.ProgramRequestSetPrice "Trainee Change Status"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainee/request/{id} [put]
 func (c *TraineeController) ChangeStatus(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	userIDHeader := ctx.Get("X-User-ID")
+
+	if userIDHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	}
+	id, err := strconv.ParseUint(userIDHeader, 10, 32)
 	if err != nil {
 		return err
 	}
