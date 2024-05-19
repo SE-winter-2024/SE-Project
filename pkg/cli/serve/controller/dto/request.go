@@ -14,7 +14,7 @@ type User struct {
 	Password    string `json:"password" validate:"required,min=8"`
 	PhoneNumber string `json:"phone_number" validate:"required,min=11"`
 	InfoID      string `json:"info_id"`
-	InfoType    string `json:"info_type"`
+	InfoType    string `json:"info_type" validate:"required"`
 	Block       bool   `json:"block"`
 	Wallet      uint64 `json:"wallet"`
 }
