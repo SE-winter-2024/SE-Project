@@ -58,7 +58,7 @@ func (c *TraineeController) EditProfile(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	var trainee dto.TraineeEdit
+	var trainee dto.UserEditTraineeOrTrainer
 	if err := ctx.BodyParser(&trainee); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
