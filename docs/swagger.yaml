@@ -330,6 +330,41 @@ definitions:
       wallet:
         type: integer
     type: object
+  dto.UserEditTraineeOrTrainer:
+    properties:
+      achievements:
+        type: string
+      active_days:
+        items:
+          type: boolean
+        type: array
+      coach_experience:
+        type: integer
+      contact:
+        type: string
+      country:
+        type: string
+      education:
+        type: string
+      height:
+        type: integer
+      language:
+        type: string
+      medicalHistory:
+        type: string
+      sport:
+        type: string
+      sports:
+        type: string
+      status:
+        type: string
+      user:
+        $ref: '#/definitions/dto.UserEdit'
+      user_name:
+        type: string
+      weight:
+        type: integer
+    type: object
   dto.UserResponse:
     properties:
       ID:
@@ -845,16 +880,12 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Trainee profile data
+      - description: Trainee or Trainer profile data
         in: body
         name: body
+        required: true
         schema:
-          $ref: '#/definitions/dto.TraineeEdit'
-      - description: Trainer profile data
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/dto.TrainerEdit'
+          $ref: '#/definitions/dto.UserEditTraineeOrTrainer'
       produces:
       - application/json
       responses:

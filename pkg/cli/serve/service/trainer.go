@@ -44,7 +44,7 @@ func GetTrainerByUserID(id uint) (models.Trainer, error) {
 	return trainer, nil
 }
 
-func EditTrainerProfile(id uint64, trainer dto.TrainerEdit) (models.Trainer, error) {
+func EditTrainerProfile(id uint64, trainer dto.UserEditTraineeOrTrainer) (models.Trainer, error) {
 	user, _ := GetUserById(id)
 
 	activeDays := models.ActiveDays{

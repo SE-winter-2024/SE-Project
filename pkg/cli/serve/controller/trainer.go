@@ -68,7 +68,7 @@ func (c *TrainerController) EditProfile(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
 	userID := uint(claims["user_id"].(float64))
-	var trainer dto.TrainerEdit
+	var trainer dto.UserEditTraineeOrTrainer
 	if err := ctx.BodyParser(&trainer); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}

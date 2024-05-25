@@ -166,8 +166,7 @@ func (c *UserController) GetProfile(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "JWT Token"
-// @Param body body dto.TraineeEdit false "Trainee profile data"
-// @Param body body dto.TrainerEdit false "Trainer profile data"
+// @Param body body dto.UserEditTraineeOrTrainer true "Trainee or Trainer profile data"
 // @Success 200 {object} dto.Response "Successful"
 // @Failure 400 {object} string "Bad request"
 // @Failure 401 {object} string "Unauthorized"
@@ -196,7 +195,7 @@ func (c *UserController) EditProfile(ctx *fiber.Ctx) error {
 		return err
 	}
 	if user.InfoType == "trainer" {
-		var trainer dto.TrainerEdit
+		var trainer dto.UserEditTraineeOrTrainer
 		if err := ctx.BodyParser(&trainer); err != nil {
 			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 		}
@@ -228,7 +227,7 @@ func (c *UserController) EditProfile(ctx *fiber.Ctx) error {
 			ID:      trainerModel.ID,
 		})
 	}
-	var trainee dto.TraineeEdit
+	var trainee dto.UserEditTraineeOrTrainer
 	if err := ctx.BodyParser(&trainee); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}

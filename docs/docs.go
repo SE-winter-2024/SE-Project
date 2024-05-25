@@ -743,19 +743,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Trainee profile data",
+                        "description": "Trainee or Trainer profile data",
                         "name": "body",
                         "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.TraineeEdit"
-                        }
-                    },
-                    {
-                        "description": "Trainer profile data",
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/dto.TrainerEdit"
+                            "$ref": "#/definitions/dto.UserEditTraineeOrTrainer"
                         }
                     }
                 ],
@@ -1315,6 +1308,59 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "wallet": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.UserEditTraineeOrTrainer": {
+            "type": "object",
+            "properties": {
+                "achievements": {
+                    "type": "string"
+                },
+                "active_days": {
+                    "type": "array",
+                    "items": {
+                        "type": "boolean"
+                    }
+                },
+                "coach_experience": {
+                    "type": "integer"
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "education": {
+                    "type": "string"
+                },
+                "height": {
+                    "type": "integer"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "medicalHistory": {
+                    "type": "string"
+                },
+                "sport": {
+                    "type": "string"
+                },
+                "sports": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/dto.UserEdit"
+                },
+                "user_name": {
+                    "type": "string"
+                },
+                "weight": {
                     "type": "integer"
                 }
             }
