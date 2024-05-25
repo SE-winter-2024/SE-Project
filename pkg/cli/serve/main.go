@@ -9,12 +9,12 @@ import (
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/configs"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/spf13/cobra"
 	fiberSwagger "github.com/swaggo/fiber-swagger"
-  "github.com/gofiber/fiber/v2/middleware/cors"
 )
 
-func main() {
+func Main() {
 	app := fiber.New()
 	initialization()
 
@@ -58,7 +58,7 @@ func New() *cobra.Command {
 		Use:   "serve",
 		Short: "runs http server",
 		Run: func(cmd *cobra.Command, args []string) {
-			main()
+			Main()
 		},
 	}
 }

@@ -17,7 +17,6 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Get("/profile/", c.GetTrainerProfile)
 	group.Put("/profile/", c.EditProfile)
 	group.Get("/trainees/", c.GetTrainees)
-	//group.Get("/requests/", c.GetRequests)
 	group.Get("/requests/", c.GetAllRequests)
 	group.Put("/request/set-price", c.SetPrice)
 	group.Post("/program", c.CreateTrainingProgram)
