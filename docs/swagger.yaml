@@ -750,9 +750,9 @@ paths:
       - application/json
       description: get requests of a trainer by ID
       parameters:
-      - description: ID of the user
+      - description: JWT Token
         in: header
-        name: X-User-ID
+        name: Authorization
         required: true
         type: string
       produces:

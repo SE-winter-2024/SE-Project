@@ -260,7 +260,7 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 	}
 	userID := uint(claims["user_id"].(float64))
 
-	trainerModel, err := serve.GetTrainerById(userID)
+	trainerModel, err := serve.GetTrainerByUserID(userID)
 	if err != nil {
 		return err
 	}
@@ -278,7 +278,7 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 	}
 	res := dto.ProgramRequestSetPrice{
 		ID:          req.ID,
-		TrainerID:   req.TrainerID,
+		TrainerID:   trainerModel.ID,
 		TraineeID:   req.TraineeID,
 		Price:       req.Price,
 		Description: req.Description,
@@ -318,7 +318,7 @@ func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
 	}
 	userID := uint(claims["user_id"].(float64))
 
-	trainerModel, err := serve.GetTrainerById(userID)
+	trainerModel, err := serve.GetTrainerByUserID(userID)
 	if err != nil {
 		return err
 	}

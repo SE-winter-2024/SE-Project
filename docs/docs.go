@@ -549,8 +549,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
+                        "description": "JWT Token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     }
