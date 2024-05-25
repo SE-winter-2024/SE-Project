@@ -74,6 +74,24 @@ type TrainerEdit struct {
 	ActiveDays      []bool   `json:"active_days" validate:"required"`
 }
 
+type UserEditTraineeOrTrainer struct {
+	User            UserEdit `json:"user"`
+	UserName        string   `json:"user_name" validate:"required"`
+	Status          string   `json:"status" validate:"required"`
+	CoachExperience uint     `json:"coach_experience" validate:"required"`
+	Contact         string   `json:"contact" validate:"required"`
+	Language        string   `json:"language" validate:"required"`
+	Country         string   `json:"country" validate:"required"`
+	Sport           string   `json:"sport" validate:"required"`
+	Achievements    string   `json:"achievements" validate:"required"`
+	Education       string   `json:"education" validate:"required"`
+	Height          uint     `json:"height" validate:"required"`
+	Weight          uint     `json:"weight" validate:"required"`
+	Sports          string   `json:"sports" validate:"required"`
+	MedicalHistory  string   `json:"medicalHistory" validate:"required"`
+	ActiveDays      []bool   `json:"active_days" validate:"required"`
+}
+
 type TraineeEdit struct {
 	User           UserEdit `json:"user"`
 	Height         uint     `json:"height" validate:"required"`

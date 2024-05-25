@@ -42,7 +42,7 @@ func GetTraineeById(id uint) (models.Trainee, error) {
 	return trainee, nil
 }
 
-func EditTraineeProfile(id uint64, trainee dto.TraineeEdit) (models.Trainee, error) {
+func EditTraineeProfile(id uint64, trainee dto.UserEditTraineeOrTrainer) (models.Trainee, error) {
 	user, _ := GetUserById(id)
 
 	activeDays := models.ActiveDays{
