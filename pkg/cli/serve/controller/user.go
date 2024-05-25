@@ -45,7 +45,6 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Cannot get user", "error": err})
 	}
 	token, err := authService.JwtGenerator(user)
-	fmt.Println(token)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
