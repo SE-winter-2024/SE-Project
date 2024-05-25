@@ -3,6 +3,7 @@ package serve
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"
@@ -20,6 +21,7 @@ func (c *UserController) RegisterRoutes(group fiber.Router) {
 	group.Post("/login", c.LogIn)
 
 	group.Post("/sign-up", c.SignUp)
+	group.Get("/:id/profile", c.GetProfile)
 }
 
 // LogIn
@@ -49,6 +51,7 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
 	userR := dto.UserResponse{
+		ID:          user.ID,
 		Email:       user.Email,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
@@ -94,7 +97,9 @@ func (c *UserController) SignUp(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
+	fmt.Println(userModel.ID)
 	userR := dto.UserResponse{
+		ID:          userModel.ID,
 		Email:       userModel.Email,
 		FirstName:   userModel.FirstName,
 		LastName:    userModel.LastName,
@@ -106,4 +111,46 @@ func (c *UserController) SignUp(ctx *fiber.Ctx) error {
 		JWT:         token,
 	}
 	return ctx.JSON(userR)
+}
+
+// GetProfile
+// @Summary Get a User
+// @Description get user profile by id
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param id path int true "User ID"
+// @Success 200 {object} dto.UserResponse "User information"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /user/:id/profile [get]
+func (c *UserController) GetProfile(ctx *fiber.Ctx) error {
+	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid user ID"})
+	}
+
+	user, err := serve.GetUserById(id)
+
+	if err != nil {
+		return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"message": "User not found"})
+	}
+
+	if user.InfoType == "trainer" {
+		trainer, _ := serve.GetTrainerByUserID(uint(id))
+
+		return ctx.JSON(fiber.Map{
+			"user":    user,
+			"profile": trainer,
+		})
+
+	} else {
+		trainee, _ := serve.GetTraineeByUserID(uint(id))
+
+		return ctx.JSON(fiber.Map{
+			"user":    user,
+			"profile": trainee,
+		})
+	}
 }

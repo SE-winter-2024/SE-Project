@@ -200,3 +200,14 @@ func ChangeStatus(change dto.TraineeChangeStatus) (models.Request, error) {
 	tx.Commit()
 	return GetRequest(r.ID)
 }
+
+func GetTraineeByUserID(id uint) (models.Trainee, error) {
+	var trainee models.Trainee
+	if err := database.DB.Preload("User").Preload("ActiveDays").Where("user_id = ?", id).First(&trainee).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.Trainee{}, nil
+		}
+		return models.Trainee{}, err
+	}
+	return trainee, nil
+}

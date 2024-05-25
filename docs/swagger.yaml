@@ -328,6 +328,8 @@ definitions:
     type: object
   dto.UserResponse:
     properties:
+      ID:
+        type: integer
       block:
         type: boolean
       email:
@@ -346,6 +348,10 @@ definitions:
         type: string
       phone_number:
         type: string
+      profile:
+        additionalProperties:
+          type: string
+        type: object
       type:
         type: string
       wallet:
@@ -756,6 +762,35 @@ paths:
       summary: Get requests
       tags:
       - trainer
+  /user/:id/profile:
+    get:
+      consumes:
+      - application/json
+      description: get user profile by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get a User
+      tags:
+      - user
   /user/login:
     post:
       consumes:

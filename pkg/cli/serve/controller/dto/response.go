@@ -9,17 +9,19 @@ type Response struct {
 }
 
 type UserResponse struct {
-	Email       string `json:"email,omitempty"`
-	FirstName   string `json:"first_name,omitempty"`
-	LastName    string `json:"last_name,omitempty"`
-	Password    string `json:"password,omitempty"`
-	PhoneNumber string `json:"phone_number,omitempty"`
-	Type        string `json:"type,omitempty"`
-	InfoID      string `json:"info_id,omitempty"`
-	InfoType    string `json:"info_type,omitempty"`
-	Block       bool   `json:"block,omitempty"`
-	Wallet      uint64 `json:"wallet,omitempty"`
-	JWT         string `json:"jwt,omitempty"`
+	ID          uint              `json:"ID,omitempty"`
+	Email       string            `json:"email,omitempty"`
+	FirstName   string            `json:"first_name,omitempty"`
+	LastName    string            `json:"last_name,omitempty"`
+	Password    string            `json:"password,omitempty"`
+	PhoneNumber string            `json:"phone_number,omitempty"`
+	Type        string            `json:"type,omitempty"`
+	InfoID      string            `json:"info_id,omitempty"`
+	InfoType    string            `json:"info_type,omitempty"`
+	Block       bool              `json:"block,omitempty"`
+	Wallet      uint64            `json:"wallet,omitempty"`
+	JWT         string            `json:"jwt,omitempty"`
+	Profile     map[string]string `json:"profile,omitempty"`
 }
 
 type TrainerResponse struct {

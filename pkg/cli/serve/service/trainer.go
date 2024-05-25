@@ -33,6 +33,17 @@ func GetTrainerById(id uint) (models.Trainer, error) {
 	return trainer, nil
 }
 
+func GetTrainerByUserID(id uint) (models.Trainer, error) {
+	var trainer models.Trainer
+	if err := database.DB.Preload("User").Preload("ActiveDays").Where("user_id = ?", id).First(&trainer).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.Trainer{}, nil
+		}
+		return models.Trainer{}, err
+	}
+	return trainer, nil
+}
+
 func EditTrainerProfile(id uint64, trainer dto.TrainerEdit) (models.Trainer, error) {
 	user, _ := GetUserById(id)
 
