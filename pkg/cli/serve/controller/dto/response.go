@@ -19,6 +19,7 @@ type UserResponse struct {
 	InfoType    string `json:"info_type,omitempty"`
 	Block       bool   `json:"block,omitempty"`
 	Wallet      uint64 `json:"wallet,omitempty"`
+	JWT         string `json:"jwt,omitempty"`
 }
 
 type TrainerResponse struct {

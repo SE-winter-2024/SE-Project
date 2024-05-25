@@ -24,7 +24,7 @@ import (
 // @securityDefinitions.apikey	UserID
 // @in							header
 // @name						X-User-Id
-// @securityDefinitions.apikey	APIKey
+// @securityDefinitions.apikey
 // @in							header
 // @name						api-key
 // @BasePath					/v1

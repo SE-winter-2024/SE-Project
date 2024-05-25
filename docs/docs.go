@@ -696,7 +696,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User information",
                         "schema": {
-                            "$ref": "#/definitions/dto.User"
+                            "$ref": "#/definitions/dto.UserResponse"
                         }
                     },
                     "400": {
@@ -1113,6 +1113,7 @@ const docTemplate = `{
                 "email",
                 "first_name",
                 "gender",
+                "info_type",
                 "last_name",
                 "password",
                 "phone_number"
@@ -1215,6 +1216,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "info_type": {
+                    "type": "string"
+                },
+                "jwt": {
                     "type": "string"
                 },
                 "last_name": {

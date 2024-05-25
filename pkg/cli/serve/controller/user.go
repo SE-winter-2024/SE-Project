@@ -49,19 +49,16 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
-	userR := dto.User{
-		ID:          user.ID,
+	userR := dto.UserResponse{
 		Email:       user.Email,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
-		Age:         user.Age,
-		Gender:      user.Gender,
-		Password:    user.Password,
 		PhoneNumber: user.PhoneNumber,
 		InfoID:      user.InfoID,
 		InfoType:    user.InfoType,
 		Block:       user.Block,
 		Wallet:      user.Wallet,
+		JWT:         token,
 	}
 	return ctx.JSON(userR)
 }
@@ -73,7 +70,7 @@ func (c *UserController) LogIn(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body dto.User true "User details"
-// @Success 200 {object} dto.User "User information"
+// @Success 200 {object} dto.UserResponse "User information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /user/sign-up [post]
@@ -94,23 +91,20 @@ func (c *UserController) SignUp(ctx *fiber.Ctx) error {
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "cannot create user", "error": err})
 	}
-	_, err = authService.JwtGenerator(userModel)
+	token, err := authService.JwtGenerator(userModel)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Failed to generate JWT token", "error": err})
 	}
-	userR := dto.User{
-		ID:          userModel.ID,
+	userR := dto.UserResponse{
 		Email:       userModel.Email,
 		FirstName:   userModel.FirstName,
 		LastName:    userModel.LastName,
-		Age:         userModel.Age,
-		Gender:      userModel.Gender,
-		Password:    userModel.Password,
 		PhoneNumber: userModel.PhoneNumber,
 		InfoID:      userModel.InfoID,
 		InfoType:    userModel.InfoType,
 		Block:       userModel.Block,
 		Wallet:      userModel.Wallet,
+		JWT:         token,
 	}
 	return ctx.JSON(userR)
 }
