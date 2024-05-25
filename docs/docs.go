@@ -1295,8 +1295,12 @@ const docTemplate = `{
             }
         }
     },
-    "externalDocs": {
-        "description": "OpenAPI"
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
@@ -1304,7 +1308,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/v1",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "SE Project",
 	Description:      "Software Engineering Course Project",

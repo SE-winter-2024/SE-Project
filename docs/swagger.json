@@ -9,7 +9,6 @@
         },
         "version": "1.0"
     },
-    "basePath": "/v1",
     "paths": {
         "/trainee/profile/{id}": {
             "get": {
@@ -1288,7 +1287,11 @@
             }
         }
     },
-    "externalDocs": {
-        "description": "OpenAPI"
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }

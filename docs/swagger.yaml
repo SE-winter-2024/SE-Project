@@ -1,4 +1,3 @@
-basePath: /v1
 definitions:
   dto.AddSportActivity:
     properties:
@@ -358,8 +357,6 @@ definitions:
       wallet:
         type: integer
     type: object
-externalDocs:
-  description: OpenAPI
 info:
   contact:
     email: mahdiehmoghiseh81@gmail.com
@@ -859,4 +856,9 @@ paths:
       summary: Sign up user
       tags:
       - user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

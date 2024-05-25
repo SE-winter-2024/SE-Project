@@ -7,7 +7,7 @@ import "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli"
 // @description Software Engineering Course Project
 // @contact.name Mahdieh Moghiseh
 // @contact.email mahdiehmoghiseh81@gmail.com
-// @securityDefinitions.bearerAuth JWT
+// @securityDefinitions.apiKey BearerAuth
 // @type apiKey
 // @name Authorization
 // @in header
