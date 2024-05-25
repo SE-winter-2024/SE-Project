@@ -2,7 +2,9 @@ package serve
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt/v4"
 	"net/http"
+	"os"
 	"strconv"
 
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
@@ -22,6 +24,7 @@ func (c *UserController) RegisterRoutes(group fiber.Router) {
 
 	group.Post("/sign-up", c.SignUp)
 	group.Get("/:id/profile", c.GetProfile)
+	group.Put("/profile", c.EditProfile)
 }
 
 // LogIn
@@ -153,4 +156,107 @@ func (c *UserController) GetProfile(ctx *fiber.Ctx) error {
 			"profile": trainee,
 		})
 	}
+}
+
+// EditProfile
+//
+// @Summary Edit user profile
+// @Description Edit user profile based on the user's role (trainer or trainee)
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "JWT Token"
+// @Param body body dto.TraineeEdit false "Trainee profile data"
+// @Param body body dto.TrainerEdit false "Trainer profile data"
+// @Success 200 {object} dto.Response "Successful"
+// @Failure 400 {object} string "Bad request"
+// @Failure 401 {object} string "Unauthorized"
+// @Router /user/profile [put]
+func (c *UserController) EditProfile(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	fmt.Println(userID)
+	user, err := serve.GetUserById(uint64(userID))
+	if err != nil {
+		return err
+	}
+	if user.InfoType == "trainer" {
+		var trainer dto.TrainerEdit
+		if err := ctx.BodyParser(&trainer); err != nil {
+			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+		}
+
+		if err := utils.ValidateUser(trainer); err != nil {
+			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
+		}
+		trainer.User = dto.UserEdit{
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			Age:         user.Age,
+			Gender:      user.Gender,
+			Password:    user.Password,
+			PhoneNumber: user.PhoneNumber,
+			InfoID:      user.InfoID,
+			InfoType:    user.InfoType,
+			Block:       user.Block,
+			Wallet:      user.Wallet,
+		}
+		trainerModel, err := serve.EditTrainerProfile(uint64(userID), trainer)
+		if err != nil {
+			return err
+		}
+		return ctx.JSON(dto.Response{
+			Message: "Successful",
+			Success: true,
+			ID:      trainerModel.ID,
+		})
+	}
+	var trainee dto.TraineeEdit
+	if err := ctx.BodyParser(&trainee); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+
+	if err := utils.ValidateUser(trainee); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
+	}
+	trainee.User = dto.UserEdit{
+		ID:          user.ID,
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Age:         user.Age,
+		Gender:      user.Gender,
+		Password:    user.Password,
+		PhoneNumber: user.PhoneNumber,
+		InfoID:      user.InfoID,
+		InfoType:    user.InfoType,
+		Block:       user.Block,
+		Wallet:      user.Wallet,
+	}
+	traineeModel, err := serve.EditTraineeProfile(uint64(userID), trainee)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(dto.Response{
+		Message: "successful",
+		Success: true,
+		ID:      traineeModel.ID,
+	})
 }

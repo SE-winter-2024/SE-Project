@@ -324,53 +324,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/trainer/profile/": {
-            "get": {
-                "description": "get trainees of a trainer by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "trainer"
-                ],
-                "summary": "Get trainees",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Trainer trainees",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.TraineeInTrainerPage"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Trainer not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/trainer/profile/{id}": {
             "get": {
                 "description": "Retrieves the profile information of a trainer by ID",
@@ -625,6 +578,59 @@ const docTemplate = `{
                 }
             }
         },
+        "/trainer/trainees/": {
+            "get": {
+                "description": "get trainees of a trainer by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "Get trainees",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trainer trainees",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.TraineeInTrainerPage"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request: User ID header missing or invalid token",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainer not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/user/:id/profile": {
             "get": {
                 "description": "get user profile by id",
@@ -708,6 +714,66 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profile": {
+            "put": {
+                "description": "Edit user profile based on the user's role (trainer or trainee)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Edit user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Trainee profile data",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TraineeEdit"
+                        }
+                    },
+                    {
+                        "description": "Trainer profile data",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainerEdit"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "string"
                         }
@@ -1125,6 +1191,9 @@ const docTemplate = `{
                 },
                 "requestId": {
                     "type": "integer"
+                },
+                "trainerID": {
+                    "type": "integer"
                 }
             }
         },
@@ -1150,6 +1219,9 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
+                },
+                "trainer_id": {
+                    "type": "integer"
                 }
             }
         },

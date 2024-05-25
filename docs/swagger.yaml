@@ -240,6 +240,8 @@ definitions:
         type: boolean
       requestId:
         type: integer
+      trainerID:
+        type: integer
     required:
     - price
     - requestId
@@ -256,6 +258,8 @@ definitions:
         type: string
       title:
         type: string
+      trainer_id:
+        type: integer
     required:
     - end_date
     - request_id
@@ -568,37 +572,6 @@ paths:
       summary: Set price for a request
       tags:
       - trainer
-  /trainer/profile/:
-    get:
-      consumes:
-      - application/json
-      description: get trainees of a trainer by ID
-      parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Trainer trainees
-          schema:
-            items:
-              $ref: '#/definitions/dto.TraineeInTrainerPage'
-            type: array
-        "404":
-          description: Trainer not found
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Get trainees
-      tags:
-      - trainer
   /trainer/profile/{id}:
     get:
       consumes:
@@ -767,6 +740,41 @@ paths:
       summary: Get requests
       tags:
       - trainer
+  /trainer/trainees/:
+    get:
+      consumes:
+      - application/json
+      description: get trainees of a trainer by ID
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Trainer trainees
+          schema:
+            items:
+              $ref: '#/definitions/dto.TraineeInTrainerPage'
+            type: array
+        "400":
+          description: 'Bad Request: User ID header missing or invalid token'
+          schema:
+            type: string
+        "404":
+          description: Trainer not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get trainees
+      tags:
+      - trainer
   /user/:id/profile:
     get:
       consumes:
@@ -824,6 +832,45 @@ paths:
           schema:
             type: string
       summary: Log in user
+      tags:
+      - user
+  /user/profile:
+    put:
+      consumes:
+      - application/json
+      description: Edit user profile based on the user's role (trainer or trainee)
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Trainee profile data
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dto.TraineeEdit'
+      - description: Trainer profile data
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/dto.TrainerEdit'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      summary: Edit user profile
       tags:
       - user
   /user/sign-up:

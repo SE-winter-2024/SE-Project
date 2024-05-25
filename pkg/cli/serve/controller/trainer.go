@@ -1,14 +1,15 @@
 package serve
 
 import (
-	"fmt"
-	"net/http"
-	"strconv"
-
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/utils"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
+	"net/http"
+	"os"
+	"strconv"
 )
 
 type TrainerController struct{}
@@ -50,15 +51,23 @@ func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainer/profile/{id} [put]
 func (c *TrainerController) EditProfile(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
-	}
-	id, err := strconv.ParseUint(userIDHeader, 10, 32)
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
 	if err != nil {
-		return err
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
 	var trainer dto.TrainerEdit
 	if err := ctx.BodyParser(&trainer); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
@@ -67,7 +76,11 @@ func (c *TrainerController) EditProfile(ctx *fiber.Ctx) error {
 	if err := utils.ValidateUser(trainer); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 	}
-	newTrainer, err := serve.EditTrainerProfile(id, trainer)
+	trainerModel, err := serve.GetTrainerByUserID(userID)
+	if err != nil {
+		return err
+	}
+	newTrainer, err := serve.EditTrainerProfile(uint64(trainerModel.ID), trainer)
 	if err != nil {
 		return err
 	}
@@ -86,16 +99,24 @@ func (c *TrainerController) EditProfile(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainer/profile/{id} [get]
 func (c *TrainerController) GetTrainerProfile(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
-	}
-	id, err := strconv.ParseUint(userIDHeader, 10, 32)
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
 	if err != nil {
-		return err
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
-	trainerModel, err := serve.GetTrainerProfile(uint(id))
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainerModel, err := serve.GetTrainerByUserID(userID)
 	if err != nil {
 		fmt.Println(err)
 		return err
@@ -125,35 +146,49 @@ func (c *TrainerController) GetTrainerProfile(ctx *fiber.Ctx) error {
 // @Tags trainer
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
+// @Param Authorization header string true "JWT token"
 // @Success 200 {object} []dto.TraineeInTrainerPage "Trainer trainees"
+// @Failure 400 {object} string "Bad Request: User ID header missing or invalid token"
 // @Failure 404 {object} string "Trainer not found"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /trainer/profile/ [get]
+// @Router /trainer/trainees/ [get]
 func (c *TrainerController) GetTrainees(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
-	}
-	id, err := strconv.ParseUint(userIDHeader, 10, 32)
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
 	if err != nil {
-		return err
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
-	trainerModel, err := serve.GetTrainerById(uint(id))
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainerModel, err := serve.GetTrainerByUserID(userID)
+	fmt.Println(trainerModel)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
+
 	var trainees []dto.TraineeInTrainerPage
-	for _, i := range trainerModel.TraineeIDs {
-		t, err := serve.GetTraineeById(uint(i))
+	for _, traineeID := range trainerModel.TraineeIDs {
+		trainee, err := serve.GetTraineeById(uint(traineeID))
 		if err != nil {
 			return err
 		}
-		t1 := dto.TraineeInTrainerPage{Name: t.User.FirstName + " " + t.User.LastName}
-		trainees = append(trainees, t1)
+		traineeInfo := dto.TraineeInTrainerPage{
+			Name: trainee.User.FirstName + " " + trainee.User.LastName,
+		}
+		trainees = append(trainees, traineeInfo)
 	}
+
 	return ctx.JSON(trainees)
 }
 
@@ -169,16 +204,25 @@ func (c *TrainerController) GetTrainees(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainer/requests/ [get]
 func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
-	}
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
 	if err != nil {
-		return err
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
-	trainerModel, err := serve.GetTrainerById(uint(id))
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+
+	trainerModel, err := serve.GetTrainerById(userID)
 	if err != nil {
 		return err
 	}
@@ -212,16 +256,33 @@ func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal server error"
 // @Router /trainer/price [put]
 func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+
+	trainerModel, err := serve.GetTrainerById(userID)
+	if err != nil {
+		return err
 	}
 	var setPrice dto.TrainerSetPrice
 	if err := ctx.BodyParser(&setPrice); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
-
+	setPrice.TrainerID = trainerModel.ID
 	if err := utils.ValidateUser(setPrice); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 	}
@@ -253,17 +314,34 @@ func (c *TrainerController) SetPrice(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal server error"
 // @Router /trainer/program [post]
 func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+
+	trainerModel, err := serve.GetTrainerById(userID)
+	if err != nil {
+		return err
 	}
 
 	var program dto.TrainingProgram
 	if err := ctx.BodyParser(&program); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
-
+	program.TrainerID = trainerModel.ID
 	if err := utils.ValidateUser(program); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 	}
@@ -292,10 +370,21 @@ func (c *TrainerController) CreateTrainingProgram(ctx *fiber.Ctx) error {
 // @Failure 500 {object} string "Internal server error"
 // @Router /trainer/program/sport-activity [put]
 func (c *TrainerController) AddSportActivity(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	_, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
 
 	var activity dto.AddSportActivity

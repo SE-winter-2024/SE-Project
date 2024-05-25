@@ -100,6 +100,7 @@ type TrainerSetPrice struct {
 	RequestId uint `json:"requestId" validate:"required"`
 	Price     uint `json:"price" validate:"required"`
 	Rejected  bool `json:"rejected"`
+	TrainerID uint `json:"trainerID"`
 }
 
 type TrainingProgram struct {
@@ -108,6 +109,7 @@ type TrainingProgram struct {
 	Description string `json:"description"`
 	StartDate   string `json:"start_date" validate:"required"`
 	EndDate     string `json:"end_date" validate:"required"`
+	TrainerID   uint   `json:"trainer_id"`
 }
 
 type TraineeChangeStatus struct {
