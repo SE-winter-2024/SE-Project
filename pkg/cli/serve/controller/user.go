@@ -166,7 +166,7 @@ func (c *UserController) GetProfile(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "JWT Token"
-// @Param body body dto.UserEditTraineeOrTrainer true "Trainee profile data"
+// @Param body body dto.UserEditTraineeOrTrainer true "Trainee or Trainer profile data"
 // @Success 200 {object} dto.Response "Successful"
 // @Failure 400 {object} string "Bad request"
 // @Failure 401 {object} string "Unauthorized"

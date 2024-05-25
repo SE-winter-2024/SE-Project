@@ -743,7 +743,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Trainee profile data",
+                        "description": "Trainee or Trainer profile data",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -1314,22 +1314,6 @@ const docTemplate = `{
         },
         "dto.UserEditTraineeOrTrainer": {
             "type": "object",
-            "required": [
-                "achievements",
-                "active_days",
-                "coach_experience",
-                "contact",
-                "country",
-                "education",
-                "height",
-                "language",
-                "medicalHistory",
-                "sport",
-                "sports",
-                "status",
-                "user_name",
-                "weight"
-            ],
             "properties": {
                 "achievements": {
                     "type": "string"
