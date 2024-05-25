@@ -1,8 +1,15 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "Software Engineering Course Project",
+        "title": "SE Project",
+        "contact": {
+            "name": "Mahdieh Moghiseh",
+            "email": "mahdiehmoghiseh81@gmail.com"
+        },
+        "version": "1.0"
     },
+    "basePath": "/v1",
     "paths": {
         "/trainee/profile/{id}": {
             "get": {
@@ -1280,5 +1287,8 @@
                 }
             }
         }
+    },
+    "externalDocs": {
+        "description": "OpenAPI"
     }
 }

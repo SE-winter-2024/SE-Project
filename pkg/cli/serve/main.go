@@ -13,22 +13,6 @@ import (
 	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
-// @title						SE Project
-// @version						1.0
-// @description					Software Engineering Course Project
-// @contact.name				Mahdieh Moghiseh
-// @contact.email				mahdiehmoghiseh81@gmail.com
-// @securityDefinitions.apikey	AdminID
-// @in							header
-// @name						X-Admin-Id
-// @securityDefinitions.apikey	UserID
-// @in							header
-// @name						X-User-Id
-// @securityDefinitions.apikey
-// @in							header
-// @name						api-key
-// @BasePath					/v1
-// @externalDocs.description	OpenAPI
 func main() {
 	app := fiber.New()
 	initialization()

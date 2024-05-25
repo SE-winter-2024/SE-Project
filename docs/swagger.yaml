@@ -1,3 +1,4 @@
+basePath: /v1
 definitions:
   dto.AddSportActivity:
     properties:
@@ -357,8 +358,15 @@ definitions:
       wallet:
         type: integer
     type: object
+externalDocs:
+  description: OpenAPI
 info:
-  contact: {}
+  contact:
+    email: mahdiehmoghiseh81@gmail.com
+    name: Mahdieh Moghiseh
+  description: Software Engineering Course Project
+  title: SE Project
+  version: "1.0"
 paths:
   /trainee/profile/{id}:
     get:
