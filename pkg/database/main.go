@@ -30,7 +30,7 @@ func SetUpDB() {
 		retries--
 		time.Sleep(5 * time.Second)
 	}
-	// ClearDB()
+	//ClearDB()
 	DB.AutoMigrate(
 		&models.User{},
 		&models.Trainer{},

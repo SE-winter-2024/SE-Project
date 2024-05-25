@@ -119,6 +119,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/trainee/request/": {
+            "post": {
+                "description": "Creates a new program request with the provided data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Create program request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Program request data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgramRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Created program request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProgramRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Invalid user ID or not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainee/request/{id}": {
             "get": {
                 "description": "Retrieves the request of a trainee by ID",
@@ -201,63 +260,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Trainee not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new program request with the provided data",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "trainee"
-                ],
-                "summary": "Create program request",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Program request data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.ProgramRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Created program request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ProgramRequest"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid request payload",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Invalid user ID or not found",
                         "schema": {
                             "type": "string"
                         }
@@ -848,7 +850,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "active_days",
-                "traineeID",
                 "trainerID"
             ],
             "properties": {

@@ -2,7 +2,9 @@ package serve
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt/v4"
 	"net/http"
+	"os"
 	"strconv"
 
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
@@ -129,23 +131,32 @@ func (c *TraineeController) GetTraineeProfile(ctx *fiber.Ctx) error {
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 404 {object} string "Invalid user ID or not found"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /trainee/request/{id} [post]
+// @Router /trainee/request/ [post]
 func (c *TraineeController) CreateProgramRequest(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
-	}
-	id, err := strconv.ParseUint(userIDHeader, 10, 32)
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
 	if err != nil {
-		return err
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainee, err := serve.GetTraineeByUserID(userID)
 	var request dto.ProgramRequest
 	if err := ctx.BodyParser(&request); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
 	}
 
-	request.TraineeID = uint(id)
+	request.TraineeID = trainee.ID
 
 	if err := utils.ValidateUser(request); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})

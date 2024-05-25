@@ -9,7 +9,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 type TrainerController struct{}
@@ -18,23 +17,11 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Get("/profile/", c.GetTrainerProfile)
 	group.Put("/profile/", c.EditProfile)
 	group.Get("/trainees/", c.GetTrainees)
-	group.Get("/:id", c.getTrainer)
-	group.Get("/requests/", c.GetRequests)
+	//group.Get("/requests/", c.GetRequests)
+	group.Get("/requests/", c.GetAllRequests)
 	group.Put("/request/set-price", c.SetPrice)
 	group.Post("/program", c.CreateTrainingProgram)
 	group.Put("/program/sport-activity", c.AddSportActivity)
-}
-
-func (c *TrainerController) getTrainer(ctx *fiber.Ctx) error {
-	id, err := strconv.ParseUint(ctx.Params("id"), 10, 64)
-	if err != nil {
-		return err
-	}
-	trainer, err := serve.GetTrainerById(uint(id))
-	if err != nil {
-		return err
-	}
-	return ctx.JSON(trainer)
 }
 
 // EditProfile
@@ -192,18 +179,18 @@ func (c *TrainerController) GetTrainees(ctx *fiber.Ctx) error {
 	return ctx.JSON(trainees)
 }
 
-// GetRequests
+// GetAllRequests
 // @Summary Get requests
 // @Description get requests of a trainer by ID
 // @Tags trainer
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
+// @Param Authorization header string true "JWT Token"
 // @Success 200 {object} []dto.RequestsInTrainerPage "Trainer requests"
 // @Failure 404 {object} string "Trainer not found"
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /trainer/requests/ [get]
-func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
+func (c *TrainerController) GetAllRequests(ctx *fiber.Ctx) error {
 	tokenHeader := ctx.Get("Authorization")
 	if tokenHeader == "" {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
@@ -221,8 +208,7 @@ func (c *TrainerController) GetRequests(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
 	userID := uint(claims["user_id"].(float64))
-
-	trainerModel, err := serve.GetTrainerById(userID)
+	trainerModel, err := serve.GetTrainerByUserID(userID)
 	if err != nil {
 		return err
 	}

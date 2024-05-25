@@ -109,7 +109,7 @@ type TraineeEdit struct {
 type ProgramRequest struct {
 	ID          uint   `json:"id"`
 	TrainerID   uint   `json:"trainerID" validate:"required"`
-	TraineeID   uint   `json:"traineeID" validate:"required"`
+	TraineeID   uint   `json:"traineeID"`
 	Description string `json:"description"`
 	ActiveDays  []bool `json:"active_days" validate:"required"`
 }

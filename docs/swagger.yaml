@@ -29,7 +29,6 @@ definitions:
         type: integer
     required:
     - active_days
-    - traineeID
     - trainerID
     type: object
   dto.ProgramRequestSetPrice:
@@ -471,35 +470,7 @@ paths:
       summary: Edit trainee profile
       tags:
       - trainee
-  /trainee/request/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves the request of a trainee by ID
-      parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Trainee request
-          schema:
-            $ref: '#/definitions/dto.RequestsInTrainerPage'
-        "404":
-          description: Trainee not found
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Get trainee request
-      tags:
-      - trainee
+  /trainee/request/:
     post:
       consumes:
       - application/json
@@ -536,6 +507,35 @@ paths:
           schema:
             type: string
       summary: Create program request
+      tags:
+      - trainee
+  /trainee/request/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the request of a trainee by ID
+      parameters:
+      - description: ID of the user
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Trainee request
+          schema:
+            $ref: '#/definitions/dto.RequestsInTrainerPage'
+        "404":
+          description: Trainee not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get trainee request
       tags:
       - trainee
     put:

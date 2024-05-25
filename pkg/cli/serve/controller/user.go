@@ -203,6 +203,11 @@ func (c *UserController) EditProfile(ctx *fiber.Ctx) error {
 		if err := utils.ValidateUser(trainer); err != nil {
 			return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": err})
 		}
+		if trainer.ActiveDays == nil {
+			for i := 0; i < 7; i++ {
+				trainer.ActiveDays = append(trainer.ActiveDays, true)
+			}
+		}
 		trainer.User = dto.UserEdit{
 			ID:          user.ID,
 			Email:       user.Email,
