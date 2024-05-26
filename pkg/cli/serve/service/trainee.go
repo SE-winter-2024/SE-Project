@@ -46,13 +46,13 @@ func EditTraineeProfile(id uint64, trainee dto.UserEditTraineeOrTrainer) (models
 	user, _ := GetUserById(id)
 
 	activeDays := models.ActiveDays{
-		Monday:    trainee.ActiveDays[0],
-		Tuesday:   trainee.ActiveDays[1],
-		Wednesday: trainee.ActiveDays[2],
-		Thursday:  trainee.ActiveDays[3],
-		Friday:    trainee.ActiveDays[4],
-		Saturday:  trainee.ActiveDays[5],
-		Sunday:    trainee.ActiveDays[6],
+		// Monday:    trainee.ActiveDays[0],
+		// Tuesday:   trainee.ActiveDays[1],
+		// Wednesday: trainee.ActiveDays[2],
+		// Thursday:  trainee.ActiveDays[3],
+		// Friday:    trainee.ActiveDays[4],
+		// Saturday:  trainee.ActiveDays[5],
+		// Sunday:    trainee.ActiveDays[6],
 	}
 
 	if err := database.DB.Create(&activeDays).Error; err != nil {

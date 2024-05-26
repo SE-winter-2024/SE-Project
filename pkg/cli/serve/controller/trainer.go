@@ -411,7 +411,8 @@ func (c *TrainerController) GetALLTrainers(ctx *fiber.Ctx) error {
 	}
 	for _, t := range trainers {
 		profileCard := dto.TrainerProfileCard{
-			UserName:        t.UserName,
+			FirstName:  		 t.User.FirstName,
+			LastName:  		 	 t.User.LastName,
 			Email:           t.User.Email,
 			Status:          t.Status,
 			CoachExperience: t.CoachExperience,
@@ -419,9 +420,14 @@ func (c *TrainerController) GetALLTrainers(ctx *fiber.Ctx) error {
 			Language:        t.Language,
 			Country:         t.Country,
 		}
+		
+		fmt.Println("user", t.User)
 
 		t1 := dto.TrainerResponse{
 			TrainerProfileCard: profileCard,
+			ID:                 t.User.ID,
+			FirstName:          t.User.FirstName,
+			LastName:           t.User.LastName,
 			Sports:             t.Sport,
 			Achievements:       t.Achievements,
 			Education:          t.Education,

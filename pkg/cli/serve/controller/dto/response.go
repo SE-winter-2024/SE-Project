@@ -26,13 +26,18 @@ type UserResponse struct {
 
 type TrainerResponse struct {
 	TrainerProfileCard `json:"trainer_profile_card"`
+	FirstName          string `json:"first_name,omitempty"`
+	LastName           string `json:"last_name,omitempty"`
 	Sports             string `json:"sports,omitempty"`
 	Achievements       string `json:"achievements,omitempty"`
 	Education          string `json:"education,omitempty"`
+	ID        				 uint `json:"id,omitempty"`
 }
 
 type TrainerProfileCard struct {
-	UserName        string `json:"user_name,omitempty"`
+	FirstName        string `json:"first_name,omitempty"`
+	LastName        string `json:"last_name,omitempty"`
+	UserName        string `json:"username,omitempty"`
 	Email           string `json:"email,omitempty"`
 	Status          string `json:"status,omitempty"`
 	CoachExperience uint   `json:"coach_experience,omitempty"`

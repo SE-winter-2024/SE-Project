@@ -259,7 +259,7 @@ func AddSportActivity(activity dto.AddSportActivity) (models.SportActivity, erro
 
 func GetALLTrainers() ([]models.Trainer, error) {
 	var ts []models.Trainer
-	err := database.DB.Find(&ts).Error
+	err := database.DB.Preload("User").Find(&ts).Error
 	if err != nil {
 		return nil, err
 	}
