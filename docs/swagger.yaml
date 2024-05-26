@@ -810,6 +810,31 @@ paths:
       summary: Get trainees
       tags:
       - trainer
+  /trainer/trainers/:
+    get:
+      consumes:
+      - application/json
+      description: all trainers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.TrainerResponse'
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: get all trainers
+      tags:
+      - trainer
   /user/:id/profile:
     get:
       consumes:

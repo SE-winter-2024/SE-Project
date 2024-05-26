@@ -21,6 +21,7 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Put("/request/set-price", c.SetPrice)
 	group.Post("/program", c.CreateTrainingProgram)
 	group.Put("/program/sport-activity", c.AddSportActivity)
+	group.Get("/trainers", c.GetALLTrainers)
 }
 
 // EditProfile
@@ -390,4 +391,42 @@ func (c *TrainerController) AddSportActivity(ctx *fiber.Ctx) error {
 		ID:      s.ID,
 	}
 	return ctx.JSON(res)
+}
+
+// GetALLTrainers
+// @Summary get all trainers
+// @Description all trainers
+// @Tags trainer
+// @Accept json
+// @Produce json
+// @Success 200 {object} []dto.TrainerResponse
+// @Failure 400 {object} string "Invalid request"
+// @Failure 500 {object} string "Internal server error"
+// @Router /trainer/trainers/ [get]
+func (c *TrainerController) GetALLTrainers(ctx *fiber.Ctx) error {
+	var ts []dto.TrainerResponse
+	trainers, err := serve.GetALLTrainers()
+	if err != nil {
+		return err
+	}
+	for _, t := range trainers {
+		profileCard := dto.TrainerProfileCard{
+			UserName:        t.UserName,
+			Email:           t.User.Email,
+			Status:          t.Status,
+			CoachExperience: t.CoachExperience,
+			Contact:         t.Contact,
+			Language:        t.Language,
+			Country:         t.Country,
+		}
+
+		t1 := dto.TrainerResponse{
+			TrainerProfileCard: profileCard,
+			Sports:             t.Sport,
+			Achievements:       t.Achievements,
+			Education:          t.Education,
+		}
+		ts = append(ts, t1)
+	}
+	return ctx.JSON(ts)
 }

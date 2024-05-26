@@ -256,3 +256,12 @@ func AddSportActivity(activity dto.AddSportActivity) (models.SportActivity, erro
 	tx.Commit()
 	return sportActivity, nil
 }
+
+func GetALLTrainers() ([]models.Trainer, error) {
+	var ts []models.Trainer
+	err := database.DB.Find(&ts).Error
+	if err != nil {
+		return nil, err
+	}
+	return ts, nil
+}
