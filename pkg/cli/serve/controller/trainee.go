@@ -23,6 +23,7 @@ func (c *TraineeController) RegisterRoutes(group fiber.Router) {
 	group.Get("/request/all", c.GetRequest)
 	group.Put("/request/", c.ChangeStatus)
 	group.Get("/program/see", c.GetProgram)
+	group.Get("/week-plan", c.GetWeekPlan)
 }
 
 func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
@@ -321,6 +322,50 @@ func (c *TraineeController) GetProgram(ctx *fiber.Ctx) error {
 		StartDate:   program.StartDate.String(),
 		EndDate:     program.EndDate.String(),
 		TrainerID:   program.TrainerID,
+	}
+	return ctx.JSON(res)
+}
+
+// GetWeekPlan
+// @Summary Get week plan
+// @Description Retrieves the week plan of a trainee by ID
+// @Tags trainee
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.WeekPlan "Week plan information"
+// @Failure 404 {object} string "Trainee not found"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /trainee/week-plan [get]
+func (c *TraineeController) GetWeekPlan(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainee, err := serve.GetTraineeByUserID(userID)
+	if err != nil {
+		return err
+	}
+	res := dto.WeekPlan{
+		Monday:    trainee.ActiveDays.Monday,
+		Tuesday:   trainee.ActiveDays.Tuesday,
+		Wednesday: trainee.ActiveDays.Wednesday,
+		Thursday:  trainee.ActiveDays.Thursday,
+		Friday:    trainee.ActiveDays.Friday,
+		Saturday:  trainee.ActiveDays.Saturday,
+		Sunday:    trainee.ActiveDays.Sunday,
 	}
 	return ctx.JSON(res)
 }

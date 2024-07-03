@@ -443,6 +443,23 @@ definitions:
       wallet:
         type: integer
     type: object
+  dto.WeekPlan:
+    properties:
+      friday:
+        type: boolean
+      monday:
+        type: boolean
+      saturday:
+        type: boolean
+      sunday:
+        type: boolean
+      thursday:
+        type: boolean
+      tuesday:
+        type: boolean
+      wednesday:
+        type: boolean
+    type: object
 info:
   contact:
     email: mahdiehmoghiseh81@gmail.com
@@ -756,6 +773,29 @@ paths:
           schema:
             type: string
       summary: Get trainee request
+      tags:
+      - trainee
+  /trainee/week-plan:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the week plan of a trainee by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Week plan information
+          schema:
+            $ref: '#/definitions/dto.WeekPlan'
+        "404":
+          description: Trainee not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get week plan
       tags:
       - trainee
   /trainer/add-report:

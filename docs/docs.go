@@ -483,6 +483,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/trainee/week-plan": {
+            "get": {
+                "description": "Retrieves the week plan of a trainee by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Get week plan",
+                "responses": {
+                    "200": {
+                        "description": "Week plan information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WeekPlan"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainer/add-report": {
             "post": {
                 "description": "add report",
@@ -1778,6 +1813,32 @@ const docTemplate = `{
                 },
                 "wallet": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.WeekPlan": {
+            "type": "object",
+            "properties": {
+                "friday": {
+                    "type": "boolean"
+                },
+                "monday": {
+                    "type": "boolean"
+                },
+                "saturday": {
+                    "type": "boolean"
+                },
+                "sunday": {
+                    "type": "boolean"
+                },
+                "thursday": {
+                    "type": "boolean"
+                },
+                "tuesday": {
+                    "type": "boolean"
+                },
+                "wednesday": {
+                    "type": "boolean"
                 }
             }
         }
