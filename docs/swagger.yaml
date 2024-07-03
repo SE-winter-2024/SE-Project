@@ -779,7 +779,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieves the week plan of a trainee by ID
+      description: Retrieves the week plan of a trainer by ID
       produces:
       - application/json
       responses:
@@ -797,7 +797,7 @@ paths:
             type: string
       summary: Get week plan
       tags:
-      - trainee
+      - trainer
   /trainer/add-report:
     post:
       consumes:

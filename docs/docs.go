@@ -485,7 +485,7 @@ const docTemplate = `{
         },
         "/trainee/week-plan": {
             "get": {
-                "description": "Retrieves the week plan of a trainee by ID",
+                "description": "Retrieves the week plan of a trainer by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -493,7 +493,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "trainee"
+                    "trainer"
                 ],
                 "summary": "Get week plan",
                 "responses": {

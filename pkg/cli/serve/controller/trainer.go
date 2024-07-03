@@ -23,6 +23,7 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Put("/program/sport-activity", c.AddSportActivity)
 	group.Get("/trainers", c.GetALLTrainers)
 	group.Post("/add-report", c.AddReport)
+	group.Get("/week-plan", c.GetWeekPlanTrainer)
 }
 
 // EditProfile
@@ -478,6 +479,50 @@ func (c *TrainerController) AddReport(ctx *fiber.Ctx) error {
 	}
 	res := dto.ReportResponse{
 		Description: reportRes.Description,
+	}
+	return ctx.JSON(res)
+}
+
+// GetWeekPlanTrainer
+// @Summary Get week plan
+// @Description Retrieves the week plan of a trainer by ID
+// @Tags trainer
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.WeekPlan "Week plan information"
+// @Failure 404 {object} string "Trainee not found"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /trainee/week-plan [get]
+func (c *TrainerController) GetWeekPlanTrainer(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainer, err := serve.GetTrainerByUserID(userID)
+	if err != nil {
+		return err
+	}
+	res := dto.WeekPlan{
+		Monday:    trainer.ActiveDays.Monday,
+		Tuesday:   trainer.ActiveDays.Tuesday,
+		Wednesday: trainer.ActiveDays.Wednesday,
+		Thursday:  trainer.ActiveDays.Thursday,
+		Friday:    trainer.ActiveDays.Friday,
+		Saturday:  trainer.ActiveDays.Saturday,
+		Sunday:    trainer.ActiveDays.Sunday,
 	}
 	return ctx.JSON(res)
 }
