@@ -20,8 +20,9 @@ func (c *TraineeController) RegisterRoutes(group fiber.Router) {
 	group.Get("/profile/", c.GetTraineeProfile)
 	group.Post("/request/", c.CreateProgramRequest)
 	group.Get("/:id", c.getTrainee)
-	group.Get("/request/", c.GetRequest)
+	group.Get("/request/all", c.GetRequest)
 	group.Put("/request/", c.ChangeStatus)
+	group.Get("/program/see", c.GetProgram)
 }
 
 func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
@@ -185,18 +186,26 @@ func (c *TraineeController) CreateProgramRequest(ctx *fiber.Ctx) error {
 // @Success 200 {object} dto.RequestsInTrainerPage "Trainee request"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /trainee/request/{id} [get]
+// @Router /trainee/request/all [get]
 func (c *TraineeController) GetRequest(ctx *fiber.Ctx) error {
-	userIDHeader := ctx.Get("X-User-ID")
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
 
-	if userIDHeader == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "User ID header missing"})
-	}
-	id, err := strconv.ParseUint(userIDHeader, 10, 32)
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
 	if err != nil {
-		return err
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
 	}
-	trainee, err := serve.GetTraineeById(uint(id))
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainee, err := serve.GetTraineeByUserID(userID)
 	if err != nil {
 		return err
 	}
@@ -265,6 +274,53 @@ func (c *TraineeController) ChangeStatus(ctx *fiber.Ctx) error {
 		Description: req.Description,
 		Price:       req.Price,
 		Status:      req.Status,
+	}
+	return ctx.JSON(res)
+}
+
+// GetProgram
+// @Summary Get program
+// @Description Retrieves the program of a trainee by ID
+// @Tags trainee
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.TrainingProgram "Trainee program"
+// @Failure 404 {object} string "Trainee not found"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /trainee/program/see [get]
+func (c *TraineeController) GetProgram(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	trainee, err := serve.GetTraineeByUserID(userID)
+	if err != nil {
+		return err
+	}
+	program, err := serve.GetTrainingProgramByRequestID(trainee.RequestID)
+	if err != nil {
+		return err
+	}
+	res := dto.TrainingProgram{
+		RequestID:   trainee.RequestID,
+		Title:       program.Title,
+		Description: program.Description,
+		StartDate:   program.StartDate.String(),
+		EndDate:     program.EndDate.String(),
+		TrainerID:   program.TrainerID,
 	}
 	return ctx.JSON(res)
 }

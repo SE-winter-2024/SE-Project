@@ -18,6 +18,141 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/report/block": {
+            "put": {
+                "description": "block user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Block user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Report ID",
+                        "name": "report_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/sport-activity": {
+            "post": {
+                "description": "add sport",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Add sport",
+                "parameters": [
+                    {
+                        "description": "Sport information",
+                        "name": "Sport",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Sport"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sport information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Sport"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "description": "get all users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get users",
+                "responses": {
+                    "200": {
+                        "description": "User information",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.User"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainee/profile/{id}": {
             "get": {
                 "description": "Retrieves the profile information of a trainee by ID",
@@ -119,6 +254,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/trainee/program/": {
+            "get": {
+                "description": "Retrieves the program of a trainee by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Get program",
+                "responses": {
+                    "200": {
+                        "description": "Trainee program",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TrainingProgram"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainee/request/": {
             "post": {
                 "description": "Creates a new program request with the provided data",
@@ -178,7 +348,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/trainee/request/{id}": {
+        "/trainee/request/all": {
             "get": {
                 "description": "Retrieves the request of a trainee by ID",
                 "consumes": [
@@ -220,7 +390,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/trainee/request/{id}": {
             "put": {
                 "description": "Change request status by trainee",
                 "consumes": [
@@ -969,6 +1141,20 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Sport": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "video_path": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.SportActivitRequest": {
             "type": "object",
             "properties": {
@@ -1180,13 +1366,19 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "first_name": {
+                    "type": "string"
+                },
                 "language": {
+                    "type": "string"
+                },
+                "last_name": {
                     "type": "string"
                 },
                 "status": {
                     "type": "string"
                 },
-                "user_name": {
+                "username": {
                     "type": "string"
                 }
             }
@@ -1198,6 +1390,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "education": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_name": {
                     "type": "string"
                 },
                 "sports": {

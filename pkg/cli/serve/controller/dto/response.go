@@ -31,11 +31,11 @@ type TrainerResponse struct {
 	Sports             string `json:"sports,omitempty"`
 	Achievements       string `json:"achievements,omitempty"`
 	Education          string `json:"education,omitempty"`
-	ID        				 uint `json:"id,omitempty"`
+	ID                 uint   `json:"id,omitempty"`
 }
 
 type TrainerProfileCard struct {
-	FirstName        string `json:"first_name,omitempty"`
+	FirstName       string `json:"first_name,omitempty"`
 	LastName        string `json:"last_name,omitempty"`
 	UserName        string `json:"username,omitempty"`
 	Email           string `json:"email,omitempty"`
@@ -72,6 +72,12 @@ type SportActivity struct {
 	ExpectedWeight uint   `json:"expected_weight,omitempty"`
 	MyCount        uint   `json:"my_count,omitempty"`
 	Video          string `json:"video,omitempty"` // url
+}
+
+type Sport struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	VideoPath   string `json:"video_path"`
 }
 
 type TraineeProgram struct {

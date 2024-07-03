@@ -9,3 +9,10 @@ type SuperAdmin struct {
 	User   User
 	UserID uint
 }
+
+type Report struct {
+	gorm.Model
+	Description string
+	User        User
+	UserID      uint
+}

@@ -3,9 +3,8 @@ package serve
 import (
 	"os"
 
-	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller"
-
 	_ "bitbucket.org/dyfrag-internal/mass-media-core/docs"
+	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/configs"
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/database"
 	"github.com/gofiber/fiber/v2"

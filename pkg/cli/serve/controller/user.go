@@ -2,10 +2,11 @@ package serve
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/golang-jwt/jwt/v4"
 
 	"bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/controller/dto"
 	serve "bitbucket.org/dyfrag-internal/mass-media-core/pkg/cli/serve/service"

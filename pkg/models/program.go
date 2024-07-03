@@ -59,7 +59,7 @@ type Sport struct {
 	Title       string
 	Description string
 	VideoID     uint
-	// Video       Media `gorm:"foreignKey:VideoID;references:ID"`
+	Video       Media `gorm:"foreignKey:VideoID;references:ID"`
 }
 
 type Media struct {

@@ -211,3 +211,19 @@ func GetTraineeByUserID(id uint) (models.Trainee, error) {
 	}
 	return trainee, nil
 }
+
+func GetTrainingProgramByRequestID(id uint) (*models.TrainingProgram, error) {
+	var p models.TrainingProgram
+	req, err := GetRequest(id)
+	if err != nil {
+		return nil, err
+	}
+	trainerID := req.TrainerID
+	if err := database.DB.Where("trainer_id = ?", trainerID).First(&p).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &p, nil
+}
