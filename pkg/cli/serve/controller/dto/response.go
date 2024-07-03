@@ -111,3 +111,12 @@ type ProgramRequestSetPrice struct {
 	Price       uint   `json:"price"`
 	Status      string `json:"status"`
 }
+
+type SportResponse struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	VideoID     uint   `json:"video_id"`
+	Path        string `json:"path"`
+	Name        string `json:"name"`
+	Type        string `json:"type"`
+}

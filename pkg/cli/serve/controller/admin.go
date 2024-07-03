@@ -18,6 +18,7 @@ func (c *AdminController) RegisterRoutes(group fiber.Router) {
 	group.Get("/users", c.GetUsers)
 	group.Post("/sport", c.AddSport)
 	group.Get("/reports", c.GetReports)
+	group.Get("/reports/block", c.BlockUser)
 }
 
 // GetUsers
@@ -60,10 +61,10 @@ func (c *AdminController) GetUsers(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Sport body dto.Sport true "Sport information"
-// @Success 200 {object} dto.Sport "Sport information"
+// @Success 200 {object} dto.SportResponse "Sport information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /admin/sport-activity [post]
+// @Router /admin/sport [post]
 func (c *AdminController) AddSport(ctx *fiber.Ctx) error {
 	tokenHeader := ctx.Get("Authorization")
 	if tokenHeader == "" {
@@ -91,7 +92,15 @@ func (c *AdminController) AddSport(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(s)
+	res := dto.SportResponse{
+		Title:       s.Title,
+		Description: s.Description,
+		VideoID:     s.VideoID,
+		Path:        s.Video.Path,
+		Name:        s.Video.Name,
+		Type:        s.Video.Type,
+	}
+	return ctx.JSON(res)
 }
 
 func (c *AdminController) GetReports(ctx *fiber.Ctx) error {

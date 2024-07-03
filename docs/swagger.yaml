@@ -98,6 +98,21 @@ definitions:
       video_id:
         type: integer
     type: object
+  dto.SportResponse:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      video_id:
+        type: integer
+    type: object
   dto.TraineeChangeStatus:
     properties:
       request_id:
@@ -456,7 +471,7 @@ paths:
       summary: Block user
       tags:
       - admin
-  /admin/sport-activity:
+  /admin/sport:
     post:
       consumes:
       - application/json
@@ -474,7 +489,7 @@ paths:
         "200":
           description: Sport information
           schema:
-            $ref: '#/definitions/dto.Sport'
+            $ref: '#/definitions/dto.SportResponse'
         "400":
           description: Invalid request payload
           schema:
@@ -578,7 +593,7 @@ paths:
       summary: Edit trainee profile
       tags:
       - trainee
-  /trainee/program/:
+  /trainee/program/see:
     get:
       consumes:
       - application/json

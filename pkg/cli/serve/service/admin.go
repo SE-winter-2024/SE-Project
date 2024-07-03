@@ -54,7 +54,7 @@ func GetVideoByID(id uint) (*models.Media, error) {
 }
 func GetSportByID(id uint) (*models.Sport, error) {
 	var sport models.Sport
-	if err := database.DB.Where("id = ?", id).First(&sport).Error; err != nil {
+	if err := database.DB.Preload("Video").Where("id = ?", id).First(&sport).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

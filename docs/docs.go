@@ -69,7 +69,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/sport-activity": {
+        "/admin/sport": {
             "post": {
                 "description": "add sport",
                 "consumes": [
@@ -97,7 +97,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Sport information",
                         "schema": {
-                            "$ref": "#/definitions/dto.Sport"
+                            "$ref": "#/definitions/dto.SportResponse"
                         }
                     },
                     "400": {
@@ -254,7 +254,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/trainee/program/": {
+        "/trainee/program/see": {
             "get": {
                 "description": "Retrieves the program of a trainee by ID",
                 "consumes": [
@@ -1179,6 +1179,29 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "video_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.SportResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "video_id": {
