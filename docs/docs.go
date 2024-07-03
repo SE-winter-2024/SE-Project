@@ -18,7 +18,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/report/block": {
+        "/admin/report-block": {
             "put": {
                 "description": "block user",
                 "consumes": [
@@ -42,7 +42,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Report ID",
-                        "name": "report_id",
+                        "name": "report-id",
                         "in": "query",
                         "required": true
                     }
@@ -52,6 +52,44 @@ const docTemplate = `{
                         "description": "Report information",
                         "schema": {
                             "$ref": "#/definitions/dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/reports": {
+            "get": {
+                "description": "get reports",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get reports",
+                "responses": {
+                    "200": {
+                        "description": "Report information",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ReportResponse"
+                            }
                         }
                     },
                     "400": {
@@ -438,6 +476,52 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/trainer/add-report": {
+            "post": {
+                "description": "add report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainer"
+                ],
+                "summary": "Add report",
+                "parameters": [
+                    {
+                        "description": "Report data",
+                        "name": "report",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Report"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "string"
                         }
@@ -1106,6 +1190,28 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "trainerID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.Report": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ReportResponse": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }

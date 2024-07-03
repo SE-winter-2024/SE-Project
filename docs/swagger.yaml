@@ -49,6 +49,20 @@ definitions:
     - traineeID
     - trainerID
     type: object
+  dto.Report:
+    properties:
+      description:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  dto.ReportResponse:
+    properties:
+      description:
+        type: string
+      user_id:
+        type: integer
+    type: object
   dto.RequestsInTrainerPage:
     properties:
       date:
@@ -437,7 +451,7 @@ info:
   title: SE Project
   version: "1.0"
 paths:
-  /admin/report/block:
+  /admin/report-block:
     put:
       consumes:
       - application/json
@@ -450,7 +464,7 @@ paths:
         type: string
       - description: Report ID
         in: query
-        name: report_id
+        name: report-id
         required: true
         type: integer
       produces:
@@ -469,6 +483,31 @@ paths:
           schema:
             type: string
       summary: Block user
+      tags:
+      - admin
+  /admin/reports:
+    get:
+      consumes:
+      - application/json
+      description: get reports
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Report information
+          schema:
+            items:
+              $ref: '#/definitions/dto.ReportResponse'
+            type: array
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get reports
       tags:
       - admin
   /admin/sport:
@@ -719,6 +758,36 @@ paths:
       summary: Get trainee request
       tags:
       - trainee
+  /trainer/add-report:
+    post:
+      consumes:
+      - application/json
+      description: add report
+      parameters:
+      - description: Report data
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Report'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Report information
+          schema:
+            $ref: '#/definitions/dto.ReportResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Add report
+      tags:
+      - trainer
   /trainer/price:
     put:
       consumes:

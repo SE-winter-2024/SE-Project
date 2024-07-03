@@ -18,7 +18,7 @@ func (c *AdminController) RegisterRoutes(group fiber.Router) {
 	group.Get("/users", c.GetUsers)
 	group.Post("/sport", c.AddSport)
 	group.Get("/reports", c.GetReports)
-	group.Get("/reports/block", c.BlockUser)
+	group.Get("/report-block", c.BlockUser)
 }
 
 // GetUsers
@@ -151,11 +151,11 @@ func (c *AdminController) GetReports(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "JWT Token"
-// @Param report_id query uint true "Report ID"
+// @Param report-id query uint true "Report ID"
 // @Success 200 {object} dto.Response "Report information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /admin/report/block [put]
+// @Router /admin/report-block [put]
 func (c *AdminController) BlockUser(ctx *fiber.Ctx) error {
 	tokenHeader := ctx.Get("Authorization")
 	if tokenHeader == "" {
@@ -175,7 +175,7 @@ func (c *AdminController) BlockUser(ctx *fiber.Ctx) error {
 	}
 	userID := uint(claims["user_id"].(float64))
 	fmt.Println(userID)
-	reportID := ctx.Params("report_id")
+	reportID := ctx.Query("report-id")
 	report, err := strconv.ParseUint(reportID, 10, 32)
 	if err != nil {
 		return err
@@ -188,6 +188,7 @@ func (c *AdminController) BlockUser(ctx *fiber.Ctx) error {
 	res := dto.Response{
 		Message: "True",
 		Success: true,
+		ID:      userID,
 	}
 	return ctx.JSON(res)
 }

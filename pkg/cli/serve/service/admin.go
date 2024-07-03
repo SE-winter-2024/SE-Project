@@ -78,8 +78,9 @@ func BlockUser(reportID uint) (*models.Report, error) {
 		return nil, err
 	}
 	tx := database.DB.Begin()
-	report.User.Block = true
-	if err := tx.Save(&report).Error; err != nil {
+	user, _ := GetUserById(uint64(report.UserID))
+	user.Block = true
+	if err := tx.Save(&user).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
