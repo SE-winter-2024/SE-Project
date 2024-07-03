@@ -120,3 +120,8 @@ type SportResponse struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
 }
+
+type ReportResponse struct {
+	Description string `json:"description"`
+	UserID      uint   `json:"user_id"`
+}

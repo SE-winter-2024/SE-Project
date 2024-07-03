@@ -151,3 +151,8 @@ type SportRequest struct {
 	Description string `json:"description"`
 	VideoID     uint   `json:"video_id"`
 }
+
+type Report struct {
+	Description string `json:"description"`
+	UserID      uint   `json:"user_id"`
+}

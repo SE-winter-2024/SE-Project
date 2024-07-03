@@ -22,6 +22,7 @@ func (c *TrainerController) RegisterRoutes(group fiber.Router) {
 	group.Post("/program", c.CreateTrainingProgram)
 	group.Put("/program/sport-activity", c.AddSportActivity)
 	group.Get("/trainers", c.GetALLTrainers)
+	group.Post("/add-report", c.AddReport)
 }
 
 // EditProfile
@@ -411,8 +412,8 @@ func (c *TrainerController) GetALLTrainers(ctx *fiber.Ctx) error {
 	}
 	for _, t := range trainers {
 		profileCard := dto.TrainerProfileCard{
-			FirstName:  		 t.User.FirstName,
-			LastName:  		 	 t.User.LastName,
+			FirstName:       t.User.FirstName,
+			LastName:        t.User.LastName,
 			Email:           t.User.Email,
 			Status:          t.Status,
 			CoachExperience: t.CoachExperience,
@@ -420,7 +421,7 @@ func (c *TrainerController) GetALLTrainers(ctx *fiber.Ctx) error {
 			Language:        t.Language,
 			Country:         t.Country,
 		}
-		
+
 		fmt.Println("user", t.User)
 
 		t1 := dto.TrainerResponse{
@@ -435,4 +436,48 @@ func (c *TrainerController) GetALLTrainers(ctx *fiber.Ctx) error {
 		ts = append(ts, t1)
 	}
 	return ctx.JSON(ts)
+}
+
+// AddReport
+// @Summary Add report
+// @Description add report
+// @Tags trainer
+// @Accept json
+// @Produce json
+// @Param report body dto.Report true "Report data"
+// @Success 200 {object} dto.ReportResponse "Report information"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal server error"
+// @Router /trainer/add-report [post]
+func (c *TrainerController) AddReport(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	var report dto.Report
+	if err := ctx.BodyParser(&report); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+	report.UserID = userID
+	reportRes, err := serve.AddReport(report)
+	if err != nil {
+		return err
+	}
+	res := dto.ReportResponse{
+		Description: reportRes.Description,
+	}
+	return ctx.JSON(res)
 }

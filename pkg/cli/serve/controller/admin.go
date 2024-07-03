@@ -103,6 +103,16 @@ func (c *AdminController) AddSport(ctx *fiber.Ctx) error {
 	return ctx.JSON(res)
 }
 
+// GetReports
+// @Summary Get reports
+// @Description get reports
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Success 200 {object} []dto.ReportResponse "Report information"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /admin/reports [get]
 func (c *AdminController) GetReports(ctx *fiber.Ctx) error {
 	tokenHeader := ctx.Get("Authorization")
 	if tokenHeader == "" {
@@ -123,7 +133,15 @@ func (c *AdminController) GetReports(ctx *fiber.Ctx) error {
 	userID := uint(claims["user_id"].(float64))
 	fmt.Println(userID)
 	reports := serve.GetReports()
-	return ctx.JSON(reports)
+	var reportRes []dto.ReportResponse
+	for _, r := range reports {
+		report := dto.ReportResponse{
+			Description: r.Description,
+			UserID:      r.UserID,
+		}
+		reportRes = append(reportRes, report)
+	}
+	return ctx.JSON(reportRes)
 }
 
 // BlockUser

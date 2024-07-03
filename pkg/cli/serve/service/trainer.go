@@ -265,3 +265,14 @@ func GetALLTrainers() ([]models.Trainer, error) {
 	}
 	return ts, nil
 }
+
+func AddReport(report dto.Report) (*models.Report, error) {
+	newReport := models.Report{
+		Description: report.Description,
+		UserID:      report.UserID,
+	}
+	if err := database.DB.Create(&newReport).Error; err != nil {
+		return nil, err
+	}
+	return &newReport, nil
+}
