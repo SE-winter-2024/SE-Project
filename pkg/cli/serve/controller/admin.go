@@ -246,3 +246,24 @@ func (c *AdminController) GetSports(ctx *fiber.Ctx) error {
 	}
 	return ctx.JSON(sportRes)
 }
+
+func (c *AdminController) HelloWorld(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	return ctx.JSON(userID)
+}
