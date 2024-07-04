@@ -18,7 +18,7 @@ func (c *AdminController) RegisterRoutes(group fiber.Router) {
 	group.Get("/users", c.GetUsers)
 	group.Post("/sport", c.AddSport)
 	group.Get("/reports", c.GetReports)
-	group.Get("/report-block", c.BlockUser)
+	group.Put("/report-block", c.BlockUser)
 	group.Get("/sports", c.GetSports)
 }
 
@@ -142,6 +142,7 @@ func (c *AdminController) GetReports(ctx *fiber.Ctx) error {
 		report := dto.ReportResponse{
 			Description: r.Description,
 			UserID:      r.UserID,
+			ReportID:    r.ID,
 		}
 		reportRes = append(reportRes, report)
 	}
@@ -192,7 +193,7 @@ func (c *AdminController) BlockUser(ctx *fiber.Ctx) error {
 	res := dto.Response{
 		Message: "True",
 		Success: true,
-		ID:      userID,
+		ID:      uint(report),
 	}
 	return ctx.JSON(res)
 }

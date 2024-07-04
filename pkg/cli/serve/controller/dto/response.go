@@ -126,6 +126,7 @@ type SportResponse struct {
 type ReportResponse struct {
 	Description string `json:"description"`
 	UserID      uint   `json:"user_id"`
+	ReportID    uint   `json:"report_id"`
 }
 
 type WeekPlan struct {
