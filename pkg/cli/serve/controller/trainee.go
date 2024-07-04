@@ -23,7 +23,8 @@ func (c *TraineeController) RegisterRoutes(group fiber.Router) {
 	group.Get("/request/all", c.GetRequest)
 	group.Put("/request/", c.ChangeStatus)
 	group.Get("/program/see", c.GetProgram)
-	group.Get("/week-plan", c.GetWeekPlan)
+	group.Get("/", c.GetWeekPlan)
+	group.Post("/add-report", c.AddReportTrainee)
 }
 
 func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
@@ -44,7 +45,7 @@ func (c *TraineeController) getTrainee(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
+// @Param Authorization header string true "JWT token"
 // @Param trainee body dto.TraineeEdit true "Trainee profile data"
 // @Success 200 {object} dto.TraineeResponse "Updated trainee profile"
 // @Failure 400 {object} string "Invalid request payload"
@@ -83,7 +84,6 @@ func (c *TraineeController) EditProfile(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
 // @Success 200 {object} dto.TraineeResponse "Trainee profile information"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
@@ -127,7 +127,7 @@ func (c *TraineeController) GetTraineeProfile(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
+// @Param Authorization header string true "JWT token"
 // @Param request body dto.ProgramRequest true "Program request data"
 // @Success 200 {object} dto.ProgramRequest "Created program request"
 // @Failure 400 {object} string "Invalid request payload"
@@ -183,7 +183,7 @@ func (c *TraineeController) CreateProgramRequest(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
+// @Param Authorization header string true "JWT token"
 // @Success 200 {object} dto.RequestsInTrainerPage "Trainee request"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
@@ -229,7 +229,7 @@ func (c *TraineeController) GetRequest(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
-// @Param X-User-ID header string true "ID of the user"
+// @Param Authorization header string true "JWT token"
 // @Param request body dto.TraineeChangeStatus true "Request Change Status"
 // @Success 200 {object} dto.ProgramRequestSetPrice "Trainee Change Status"
 // @Failure 404 {object} string "Trainee not found"
@@ -285,6 +285,7 @@ func (c *TraineeController) ChangeStatus(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT token"
 // @Success 200 {object} dto.TrainingProgram "Trainee program"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
@@ -332,10 +333,11 @@ func (c *TraineeController) GetProgram(ctx *fiber.Ctx) error {
 // @Tags trainee
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT token"
 // @Success 200 {object} dto.WeekPlan "Week plan information"
 // @Failure 404 {object} string "Trainee not found"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /trainee/week-plan [get]
+// @Router /trainee/ [get]
 func (c *TraineeController) GetWeekPlan(ctx *fiber.Ctx) error {
 	tokenHeader := ctx.Get("Authorization")
 	if tokenHeader == "" {
@@ -366,6 +368,51 @@ func (c *TraineeController) GetWeekPlan(ctx *fiber.Ctx) error {
 		Friday:    trainee.ActiveDays.Friday,
 		Saturday:  trainee.ActiveDays.Saturday,
 		Sunday:    trainee.ActiveDays.Sunday,
+	}
+	return ctx.JSON(res)
+}
+
+// AddReportTrainee
+// @Summary Add report
+// @Description add report
+// @Tags trainee
+// @Accept json
+// @Produce json
+// @Param report body dto.Report true "Report data"
+// @Param Authorization header string true "JWT token"
+// @Success 200 {object} dto.ReportResponse "Report information"
+// @Failure 400 {object} string "Invalid request payload"
+// @Failure 500 {object} string "Internal server error"
+// @Router /trainee/add-report [post]
+func (c *TraineeController) AddReportTrainee(ctx *fiber.Ctx) error {
+	tokenHeader := ctx.Get("Authorization")
+	if tokenHeader == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Authorization header missing or invalid"})
+	}
+
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET_KEY")), nil
+	})
+	if err != nil {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"message": "Invalid JWT token"})
+	}
+	userID := uint(claims["user_id"].(float64))
+	var report dto.Report
+	if err := ctx.BodyParser(&report); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "Invalid request payload"})
+	}
+	report.UserID = userID
+	reportRes, err := serve.AddReport(report)
+	if err != nil {
+		return err
+	}
+	res := dto.ReportResponse{
+		Description: reportRes.Description,
 	}
 	return ctx.JSON(res)
 }

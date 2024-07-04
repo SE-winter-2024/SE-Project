@@ -507,6 +507,12 @@ paths:
       consumes:
       - application/json
       description: get reports
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -533,6 +539,11 @@ paths:
       - application/json
       description: add sport
       parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Sport information
         in: body
         name: Sport
@@ -562,6 +573,12 @@ paths:
       consumes:
       - application/json
       description: get all users
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -582,17 +599,75 @@ paths:
       summary: Get users
       tags:
       - admin
+  /trainee/:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the week plan of a trainee by ID
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Week plan information
+          schema:
+            $ref: '#/definitions/dto.WeekPlan'
+        "404":
+          description: Trainee not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get week plan
+      tags:
+      - trainee
+  /trainee/add-report:
+    post:
+      consumes:
+      - application/json
+      description: add report
+      parameters:
+      - description: Report data
+        in: body
+        name: report
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Report'
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Report information
+          schema:
+            $ref: '#/definitions/dto.ReportResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Add report
+      tags:
+      - trainee
   /trainee/profile/{id}:
     get:
       consumes:
       - application/json
       description: Retrieves the profile information of a trainee by ID
-      parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -616,9 +691,9 @@ paths:
       - application/json
       description: Updates the profile information of a trainee by UserID
       parameters:
-      - description: ID of the user
+      - description: JWT token
         in: header
-        name: X-User-ID
+        name: Authorization
         required: true
         type: string
       - description: Trainee profile data
@@ -654,6 +729,12 @@ paths:
       consumes:
       - application/json
       description: Retrieves the program of a trainee by ID
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -678,9 +759,9 @@ paths:
       - application/json
       description: Creates a new program request with the provided data
       parameters:
-      - description: ID of the user
+      - description: JWT token
         in: header
-        name: X-User-ID
+        name: Authorization
         required: true
         type: string
       - description: Program request data
@@ -717,9 +798,9 @@ paths:
       - application/json
       description: Change request status by trainee
       parameters:
-      - description: ID of the user
+      - description: JWT token
         in: header
-        name: X-User-ID
+        name: Authorization
         required: true
         type: string
       - description: Request Change Status
@@ -752,9 +833,9 @@ paths:
       - application/json
       description: Retrieves the request of a trainee by ID
       parameters:
-      - description: ID of the user
+      - description: JWT token
         in: header
-        name: X-User-ID
+        name: Authorization
         required: true
         type: string
       produces:
@@ -775,11 +856,17 @@ paths:
       summary: Get trainee request
       tags:
       - trainee
-  /trainee/week-plan:
+  /trainer/:
     get:
       consumes:
       - application/json
       description: Retrieves the week plan of a trainer by ID
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -810,6 +897,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/dto.Report'
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -834,17 +926,17 @@ paths:
       - application/json
       description: Trainer sets the price for a training request
       parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       - description: Trainer Set Price Data
         in: body
         name: TrainerSetPrice
         required: true
         schema:
           $ref: '#/definitions/dto.TrainerSetPrice'
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -869,9 +961,9 @@ paths:
       - application/json
       description: Retrieves the profile information of a trainer by ID
       parameters:
-      - description: ID of the user
+      - description: JWT token
         in: header
-        name: X-User-ID
+        name: Authorization
         required: true
         type: string
       produces:
@@ -897,17 +989,17 @@ paths:
       - application/json
       description: Updates the profile information of a trainer by UserID
       parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       - description: Trainer profile data
         in: body
         name: trainer
         required: true
         schema:
           $ref: '#/definitions/dto.TrainerEdit'
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -936,17 +1028,17 @@ paths:
       - application/json
       description: create a training program by trainer
       parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       - description: Trainer Create Program data
         in: body
         name: TrainingProgram
         required: true
         schema:
           $ref: '#/definitions/dto.TrainingProgram'
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -971,17 +1063,17 @@ paths:
       - application/json
       description: add sport activity to program by trainer
       parameters:
-      - description: ID of the user
-        in: header
-        name: X-User-ID
-        required: true
-        type: string
       - description: Add Sport Activity data
         in: body
         name: SportActivity
         required: true
         schema:
           $ref: '#/definitions/dto.AddSportActivity'
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1006,7 +1098,7 @@ paths:
       - application/json
       description: get requests of a trainer by ID
       parameters:
-      - description: JWT Token
+      - description: JWT token
         in: header
         name: Authorization
         required: true
@@ -1071,6 +1163,12 @@ paths:
       consumes:
       - application/json
       description: all trainers
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:

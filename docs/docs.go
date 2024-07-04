@@ -82,6 +82,15 @@ const docTemplate = `{
                     "admin"
                 ],
                 "summary": "Get reports",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Report information",
@@ -121,6 +130,13 @@ const docTemplate = `{
                 ],
                 "summary": "Add sport",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Sport information",
                         "name": "Sport",
@@ -166,6 +182,15 @@ const docTemplate = `{
                     "admin"
                 ],
                 "summary": "Get users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "User information",
@@ -191,6 +216,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/trainee/": {
+            "get": {
+                "description": "Retrieves the week plan of a trainee by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Get week plan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Week plan information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WeekPlan"
+                        }
+                    },
+                    "404": {
+                        "description": "Trainee not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/trainee/add-report": {
+            "post": {
+                "description": "add report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "trainee"
+                ],
+                "summary": "Add report",
+                "parameters": [
+                    {
+                        "description": "Report data",
+                        "name": "report",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Report"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Report information",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ReportResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/trainee/profile/{id}": {
             "get": {
                 "description": "Retrieves the profile information of a trainee by ID",
@@ -204,15 +326,6 @@ const docTemplate = `{
                     "trainee"
                 ],
                 "summary": "Get trainee profile",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Trainee profile information",
@@ -249,8 +362,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
+                        "description": "JWT token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -305,6 +418,15 @@ const docTemplate = `{
                     "trainee"
                 ],
                 "summary": "Get program",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Trainee program",
@@ -343,8 +465,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
+                        "description": "JWT token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -402,8 +524,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
+                        "description": "JWT token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     }
@@ -446,8 +568,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
+                        "description": "JWT token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     },
@@ -483,7 +605,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/trainee/week-plan": {
+        "/trainer/": {
             "get": {
                 "description": "Retrieves the week plan of a trainer by ID",
                 "consumes": [
@@ -496,6 +618,15 @@ const docTemplate = `{
                     "trainer"
                 ],
                 "summary": "Get week plan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Week plan information",
@@ -540,6 +671,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.Report"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -579,13 +717,6 @@ const docTemplate = `{
                 "summary": "Set price for a request",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "description": "Trainer Set Price Data",
                         "name": "TrainerSetPrice",
                         "in": "body",
@@ -593,6 +724,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.TrainerSetPrice"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -633,8 +771,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
+                        "description": "JWT token",
+                        "name": "Authorization",
                         "in": "header",
                         "required": true
                     }
@@ -674,13 +812,6 @@ const docTemplate = `{
                 "summary": "Edit trainer profile",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "description": "Trainer profile data",
                         "name": "trainer",
                         "in": "body",
@@ -688,6 +819,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.TrainerEdit"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -733,13 +871,6 @@ const docTemplate = `{
                 "summary": "creates a program",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "description": "Trainer Create Program data",
                         "name": "TrainingProgram",
                         "in": "body",
@@ -747,6 +878,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.TrainingProgram"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -786,13 +924,6 @@ const docTemplate = `{
                 "summary": "add sport activity",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "X-User-ID",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
                         "description": "Add Sport Activity data",
                         "name": "SportActivity",
                         "in": "body",
@@ -800,6 +931,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.AddSportActivity"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -840,7 +978,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "JWT Token",
+                        "description": "JWT token",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -937,6 +1075,15 @@ const docTemplate = `{
                     "trainer"
                 ],
                 "summary": "get all trainers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

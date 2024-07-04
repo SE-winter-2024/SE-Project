@@ -27,6 +27,7 @@ func (c *AdminController) RegisterRoutes(group fiber.Router) {
 // @Tags admin
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT token"
 // @Success 200 {object} []dto.User "User information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
@@ -60,6 +61,7 @@ func (c *AdminController) GetUsers(ctx *fiber.Ctx) error {
 // @Tags admin
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT token"
 // @Param Sport body dto.Sport true "Sport information"
 // @Success 200 {object} dto.SportResponse "Sport information"
 // @Failure 400 {object} string "Invalid request payload"
@@ -109,6 +111,7 @@ func (c *AdminController) AddSport(ctx *fiber.Ctx) error {
 // @Tags admin
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT token"
 // @Success 200 {object} []dto.ReportResponse "Report information"
 // @Failure 400 {object} string "Invalid request payload"
 // @Failure 500 {object} string "Internal Server Error"
