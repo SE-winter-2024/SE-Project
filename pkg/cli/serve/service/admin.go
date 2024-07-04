@@ -87,3 +87,9 @@ func BlockUser(reportID uint) (*models.Report, error) {
 	tx.Commit()
 	return &report, nil
 }
+
+func GetSports() ([]models.Sport, error) {
+	var sports []models.Sport
+	database.DB.Find(&sports)
+	return sports, nil
+}
