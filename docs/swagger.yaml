@@ -73,6 +73,10 @@ definitions:
         type: string
       trainee_name:
         type: string
+      trainer_id:
+        type: integer
+      trainer_name:
+        type: string
     type: object
   dto.Response:
     properties:
@@ -566,6 +570,37 @@ paths:
           schema:
             type: string
       summary: Add sport
+      tags:
+      - admin
+  /admin/sports:
+    get:
+      consumes:
+      - application/json
+      description: get sports
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sports information
+          schema:
+            items:
+              $ref: '#/definitions/dto.SportResponse'
+            type: array
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get sports
       tags:
       - admin
   /admin/users:

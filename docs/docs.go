@@ -169,6 +169,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/sports": {
+            "get": {
+                "description": "get sports",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get sports",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sports information",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.SportResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/users": {
             "get": {
                 "description": "get all users",
@@ -1411,6 +1458,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "trainee_name": {
+                    "type": "string"
+                },
+                "trainer_id": {
+                    "type": "integer"
+                },
+                "trainer_name": {
                     "type": "string"
                 }
             }
