@@ -212,13 +212,16 @@ func (c *TraineeController) GetRequest(ctx *fiber.Ctx) error {
 	}
 
 	r, err := serve.GetRequest(trainee.RequestID)
+	t, _ := serve.GetTrainerById(r.TrainerID)
 	if err != nil {
 		return err
 	}
 	req := dto.RequestsInTrainerPage{
-		Date:   r.Date,
-		Price:  r.Price,
-		Status: r.Status,
+		Date:        r.Date,
+		Price:       r.Price,
+		Status:      r.Status,
+		TrainerName: t.UserName,
+		TrainerID:   r.TrainerID,
 	}
 	return ctx.JSON(req)
 }

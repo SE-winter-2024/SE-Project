@@ -55,6 +55,8 @@ type RequestsInTrainerPage struct {
 	Date        time.Time `json:"date"`
 	Price       uint      `json:"price,omitempty"`
 	Status      string    `json:"status,omitempty"`
+	TrainerName string    `json:"trainer_name,omitempty"`
+	TrainerID   uint      `json:"trainer_id,omitempty"`
 }
 
 type TrainerPlan struct {
