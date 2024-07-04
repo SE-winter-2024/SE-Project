@@ -24,9 +24,9 @@ spec:
                   name: app-secret
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
-              value: youruser
+              value: postgres
             - name: POSTGRES_DB
-              value: yourdb
+              value: postgres
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data

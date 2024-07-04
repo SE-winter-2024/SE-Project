@@ -26,7 +26,9 @@ func TestTraineeControllerEndpoints(t *testing.T) {
 	os.Setenv("JWT_SECRET_KEY", "your_secret_key")
 
 	t.Run("EditProfile", func(t *testing.T) {
-		reqBody := dto.TraineeEdit{}
+		reqBody := dto.TraineeEdit{
+			UserName: "testuser",
+		}
 		token := createTestToken("1")
 		e := httpexpect.WithConfig(httpexpect.Config{
 			BaseURL:  "http://localhost",
@@ -36,7 +38,7 @@ func TestTraineeControllerEndpoints(t *testing.T) {
 			WithHeader("Authorization", "Bearer "+token).
 			WithJSON(reqBody).
 			Expect().
-			Status(http.StatusOK).JSON().Object().ContainsKey("UserName")
+			Status(http.StatusOK).JSON().Object().Value("UserName").String().NotEmpty()
 	})
 
 	t.Run("GetTraineeProfile", func(t *testing.T) {
@@ -48,7 +50,7 @@ func TestTraineeControllerEndpoints(t *testing.T) {
 		e.GET("/trainee/profile/1").
 			WithHeader("Authorization", "Bearer "+token).
 			Expect().
-			Status(http.StatusOK).JSON().Object().ContainsKey("UserName")
+			Status(http.StatusOK).JSON().Object().Value("UserName").String().NotEmpty()
 	})
 }
 
